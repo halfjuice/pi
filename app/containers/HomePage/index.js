@@ -60,13 +60,17 @@ export function HomePage({
   return (
     <article>
       <Helmet>
-        <title>Home Page</title>
+        <title>Hello Home Page</title>
         <meta
           name="description"
           content="A React.js Boilerplate application homepage"
         />
       </Helmet>
       <div>
+        <div>
+          <p>I love cheese</p>
+        </div>
+
         <CenteredSection>
           <H2>
             <FormattedMessage {...messages.startProjectHeader} />
