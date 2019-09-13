@@ -13,6 +13,7 @@ const ngrok =
     : false;
 const { resolve } = require('path');
 const app = express();
+const models = require('../models');
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -22,6 +23,8 @@ setup(app, {
   outputPath: resolve(process.cwd(), 'build'),
   publicPath: '/',
 });
+
+models.setupServerApp(app);
 
 // get the intended host and port number, use localhost and port 3000 if not provided
 const customHost = argv.host || process.env.HOST;
