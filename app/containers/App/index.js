@@ -17,9 +17,17 @@ import NewObjectPage from 'containers/NewObjectPage';
 
 import GlobalStyle from '../../global-styles';
 
+
+const AppWrapper = styled.div`
+  max-width: calc(768px + 16px * 2);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+`;
+
 export default function App() {
   return (
-    <div>
+    <AppWrapper>
       <Helmet
         titleTemplate="%s - React.js Boilerplate"
         defaultTitle="React.js Boilerplate"
@@ -32,11 +40,10 @@ export default function App() {
       </Helmet>
       <Switch>
         <Route exact path="/" component={HomePage} />
-        <Route path="/features" component={FeaturePage} />
         <Route path="/new_object" component={NewObjectPage} />
         <Route path="" component={NotFoundPage} />
       </Switch>
       <GlobalStyle />
-    </div>
+    </AppWrapper>
   );
 }
