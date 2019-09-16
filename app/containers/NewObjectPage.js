@@ -56,16 +56,22 @@ export default class NewObjectPage extends React.Component {
               </div>
             </div>
           ))}
-          <button className="ui positive button">Create</button>
+          <button
+            className="ui positive button"
+            onClick={() => this.handleSubmit()}
+          >
+            Create
+          </button>
         </div>
       </div>
     );
   }
 
   handleFieldValueChange(evt, i, j) {
-    console.log(evt.target.value, i, j);
     const f = this.state.fields;
     f[i][j] = evt.target.value;
     this.setState({ fields: f });
   }
+
+  handleSubmit() {}
 }

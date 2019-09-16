@@ -80,6 +80,7 @@
     "ip": "1.1.5",
     "lodash": "4.17.11",
     "minimist": "1.2.0",
+    "nedb": "^1.8.0",
     "prop-types": "15.7.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
@@ -91,7 +92,6 @@
     "redux-saga": "1.0.2",
     "reselect": "4.0.0",
     "sanitize.css": "8.0.0",
-    "sequelize": "^5.18.4",
     "sqlite3": "^4.1.0",
     "styled-components": "4.2.0"
   },
