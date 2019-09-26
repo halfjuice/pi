@@ -16,9 +16,10 @@ export default function HomePage() {
         />
       </Helmet>
       <div>
-        <div class="ui menu">
-          <Link class="item" to="new_object">New Object</Link>
-        </div>
+      <div class="ui menu">
+        <Link class="item" to="new_object">New Object</Link>
+        <Link class="item" to="all_objects">All Objects</Link>
+      </div>
         <table class="ui celled table">
           <thead>
             <tr>

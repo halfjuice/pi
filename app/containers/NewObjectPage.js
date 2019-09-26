@@ -13,45 +13,45 @@ export default class NewObjectPage extends React.Component {
   render() {
     return (
       <div>
-        <div className="ui menu">
+        <div class="ui menu">
           <Link class="item" to="/">
             Home
           </Link>
         </div>
-        <div className="ui top attached header">New Object</div>
-        <div className="ui attached form segment">
-          <div className="ui right aligned grid">
-            <div className="sixteen wide column">
-              <div className="mini ui icon buttons">
+        <div class="ui top attached header">New Object</div>
+        <div class="ui attached form segment">
+          <div class="ui right aligned grid">
+            <div class="sixteen wide column">
+              <div class="mini ui icon buttons">
                 <button
-                  className="ui green button"
+                  class="ui green button"
                   onClick={() =>
                     this.setState({
                       fields: this.state.fields.concat([['', '']]),
                     })
                   }
                 >
-                  <i className="plus icon" />
+                  <i class="plus icon" />
                 </button>
               </div>
             </div>
           </div>
-          <div className="two fields">
-            <div className="field">
+          <div class="two fields">
+            <div class="field">
               <b>ID</b>
             </div>
-            <div className="field">&lt;Assigned&gt;</div>
+            <div class="field">&lt;Assigned&gt;</div>
           </div>
           {this.state.fields.map((tup, i) => (
-            <div className="two fields">
-              <div className="field">
+            <div class="two fields">
+              <div class="field">
                 <input
                   placeholder={`Field Name ${i + 1}`}
                   value={tup[0]}
                   onChange={v => this.handleFieldValueChange(v, i, 0)}
                 />
               </div>
-              <div className="field">
+              <div class="field">
                 <input
                   placeholder={`Field Value ${i + 2}`}
                   value={tup[1]}
@@ -61,7 +61,7 @@ export default class NewObjectPage extends React.Component {
             </div>
           ))}
           <button
-            className="ui positive button"
+            class="ui positive button"
             onClick={() => this.handleSubmit()}
           >
             Create
@@ -76,10 +76,10 @@ export default class NewObjectPage extends React.Component {
     f[i][j] = evt.target.value;
     this.setState({ fields: f });
   }
-
+  
   handleSubmit() {
-      createObject({ test: 'hello world' }).then((res, err) => {
-	  alert(JSON.stringify(res.data));
-      });
+ 	  createObject({ test: 'hello world' }).then((res, err) => {
+	    alert(JSON.stringify(res.data));
+	  });
   }
 }

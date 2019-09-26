@@ -14,6 +14,7 @@ import { Switch, Route } from 'react-router-dom';
 import HomePage from 'containers/HomePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import NewObjectPage from 'containers/NewObjectPage';
+import AllObjectsPage from 'containers/AllObjectsPage';
 
 import GlobalStyle from '../../global-styles';
 
@@ -41,6 +42,7 @@ export default function App() {
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route path="/new_object" component={NewObjectPage} />
+        <Route path="/all_objects" component={AllObjectsPage} />
         <Route path="" component={NotFoundPage} />
       </Switch>
       <GlobalStyle />

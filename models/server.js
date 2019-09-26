@@ -5,20 +5,27 @@ const db = nedb.create('../temp/data.nedb');
 const Server = {
   createObject: fields => db.insert(fields),
   getObjectByID: id => db.findOne({ _id: id }),
+  findObjects: (skip, limit) => db.find().skip(skip).limit(limit),
 };
 
 module.exports = {
-    setupServerApp: app => {
-	app.get('/v1/test', (req, res) => {
+  setupServerApp: app => {
+	  app.get('/v1/test', (req, res) => {
 	    res.send('hello');
-	});
-	app.get('/v1/objects/:id', (req, res) => {
-	    res.send('dddd');
-	});
-	app.put('/v1/objects/', (req, res) => {
+	  });
+
+    app.get('/v1/objects/:id', (req, res) => {
+      Server.getObjectById(req.params.id).then((r, err) => res.send(r));
+	  });
+
+    app.get('/v1/objects', (req, res) => {
+      Server.findObjects(req.query.skip || 0, req.query.limit || 50).then((docs, err) => res.send(docs));
+    });
+    
+	  app.put('/v1/objects/', (req, res) => {
 	    Server.createObject(req.body).then((r, err) => {
-		res.send(r);
+		    res.send(r);
 	    });
-	});
-    },
+	  });
+  },
 };
