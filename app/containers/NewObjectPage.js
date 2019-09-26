@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { createObject } from '../../models/client';
 
 export default class NewObjectPage extends React.Component {
   constructor(props) {
@@ -13,43 +13,45 @@ export default class NewObjectPage extends React.Component {
   render() {
     return (
       <div>
-        <div class="ui menu">
-          <Link class="item" to="/">Home</Link>
+        <div className="ui menu">
+          <Link class="item" to="/">
+            Home
+          </Link>
         </div>
-        <div class="ui top attached header">New Object</div>
-        <div class="ui attached form segment">
-          <div class="ui right aligned grid">
-            <div class="sixteen wide column">
-              <div class="mini ui icon buttons">
+        <div className="ui top attached header">New Object</div>
+        <div className="ui attached form segment">
+          <div className="ui right aligned grid">
+            <div className="sixteen wide column">
+              <div className="mini ui icon buttons">
                 <button
-                  class="ui green button"
+                  className="ui green button"
                   onClick={() =>
                     this.setState({
                       fields: this.state.fields.concat([['', '']]),
                     })
                   }
                 >
-                  <i class="plus icon" />
+                  <i className="plus icon" />
                 </button>
               </div>
             </div>
           </div>
-          <div class="two fields">
-            <div class="field">
+          <div className="two fields">
+            <div className="field">
               <b>ID</b>
             </div>
-            <div class="field">&lt;Assigned&gt;</div>
+            <div className="field">&lt;Assigned&gt;</div>
           </div>
           {this.state.fields.map((tup, i) => (
-            <div class="two fields">
-              <div class="field">
+            <div className="two fields">
+              <div className="field">
                 <input
                   placeholder={`Field Name ${i + 1}`}
                   value={tup[0]}
                   onChange={v => this.handleFieldValueChange(v, i, 0)}
                 />
               </div>
-              <div class="field">
+              <div className="field">
                 <input
                   placeholder={`Field Value ${i + 2}`}
                   value={tup[1]}
@@ -59,7 +61,7 @@ export default class NewObjectPage extends React.Component {
             </div>
           ))}
           <button
-            class="ui positive button"
+            className="ui positive button"
             onClick={() => this.handleSubmit()}
           >
             Create
@@ -75,5 +77,9 @@ export default class NewObjectPage extends React.Component {
     this.setState({ fields: f });
   }
 
-  handleSubmit() {}
+  handleSubmit() {
+    createObject({ test: 'hello world' }).then((err, res) => {
+      alert(err);
+    });
+  }
 }
