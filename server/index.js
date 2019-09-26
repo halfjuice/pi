@@ -15,16 +15,22 @@ const { resolve } = require('path');
 const app = express();
 const models = require('../models/server');
 
+const bodyParser = require('body-parser');
+
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
 
+
+app.use(bodyParser.json());
+models.setupServerApp(app);
 // In production we need to pass these values in instead of relying on webpack
 setup(app, {
   outputPath: resolve(process.cwd(), 'build'),
   publicPath: '/',
 });
 
-models.setupServerApp(app);
+
+
 
 // get the intended host and port number, use localhost and port 3000 if not provided
 const customHost = argv.host || process.env.HOST;

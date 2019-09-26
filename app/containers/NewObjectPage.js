@@ -78,8 +78,8 @@ export default class NewObjectPage extends React.Component {
   }
 
   handleSubmit() {
-    createObject({ test: 'hello world' }).then((err, res) => {
-      alert(err);
-    });
+      createObject({ test: 'hello world' }).then((res, err) => {
+	  alert(JSON.stringify(res.data));
+      });
   }
 }

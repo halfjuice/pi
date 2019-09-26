@@ -8,15 +8,17 @@ const Server = {
 };
 
 module.exports = {
-  setupServerApp: app => {
-    app.get('/v1/object/:id', (_, res) => {
-      res.send('dddd');
-    });
-    app.put('/v1/objects/', (req, res) => {
-      console.log(req.body);
-      Server.createObject(JSON.parse(req.body)).then(_, r =>
-        res.send(JSON.stringify(r)),
-      );
-    });
-  },
+    setupServerApp: app => {
+	app.get('/v1/test', (req, res) => {
+	    res.send('hello');
+	});
+	app.get('/v1/objects/:id', (req, res) => {
+	    res.send('dddd');
+	});
+	app.put('/v1/objects/', (req, res) => {
+	    Server.createObject(req.body).then((r, err) => {
+		res.send(r);
+	    });
+	});
+    },
 };
