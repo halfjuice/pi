@@ -7,6 +7,7 @@ export default class NewTypePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      typeName: '',
       fields: [],
     };
   }
@@ -49,6 +50,18 @@ export default class NewTypePage extends React.Component {
             </div>
             <div class="field">&lt;Type&gt;</div>
           </div>
+          <div class="two fields">
+            <div class="field">
+              <b>Name</b>
+            </div>
+            <div class="field">
+              <input
+                placeholder={`Type Name`}
+                value={this.state.typeName}
+                onChange={v => this.setState({typeName: v.target.value})}
+              />
+            </div>
+          </div>
           {this.state.fields.map((tup, i) => (
             <div class="two fields">
               <div class="field">
@@ -82,14 +95,13 @@ export default class NewTypePage extends React.Component {
   handleFieldValueChange(evt, i, j) {
     const f = this.state.fields;
     f[i][j] = evt.target.value;
-    console.log(f);
     this.setState({ fields: f });
   }
 
   handleSubmit() {
     var obj = tuples2obj(this.state.fields);
-    console.log(this.state.fields, obj);
     obj['type'] = 0;
+    obj['name'] = this.state.typeName;
  	  createObject(obj).then((res, err) => {
 	    alert(JSON.stringify(res.data));
 	  });

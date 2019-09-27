@@ -19,7 +19,7 @@ module.exports = {
 	  });
 
     app.get('/v1/objects', (req, res) => {
-      Server.findObjects(req.query.skip || 0, req.query.limit || 50).then((docs, err) => res.send(docs));
+      Server.findObjects(JSON.parse(req.query.query) || '{}'), req.query.skip || 0, req.query.limit || 50).then((docs, err) => res.send(docs));
     });
 
 	  app.put('/v1/objects/', (req, res) => {
