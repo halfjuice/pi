@@ -5,7 +5,7 @@ const db = nedb.create('../temp/data.nedb');
 const Server = {
   createObject: fields => db.insert(fields),
   getObjectByID: id => db.findOne({ _id: id }),
-  findObjects: (skip, limit) => db.find().skip(skip).limit(limit),
+  findObjects: (query, skip, limit) => db.find(query).skip(skip).limit(limit),
 };
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
     app.get('/v1/objects', (req, res) => {
       Server.findObjects(req.query.skip || 0, req.query.limit || 50).then((docs, err) => res.send(docs));
     });
-    
+
 	  app.put('/v1/objects/', (req, res) => {
 	    Server.createObject(req.body).then((r, err) => {
 		    res.send(r);
