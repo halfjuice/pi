@@ -31,7 +31,7 @@ export default class AllTypesPage extends React.Component {
             {this.state.types.map(t =>
               <div class="item">
                 <div class="content">
-                  <a class="header">{t['name']}</a>
+                  <Link class="header" to={'/view_type/'+t['_id']}>{t['name']}</Link>
                   <div class="description">
                     <p>Description for object</p>
                   </div>

@@ -17,6 +17,7 @@ import NewObjectPage from 'containers/NewObjectPage';
 import NewTypePage from 'containers/NewTypePage';
 import AllObjectsPage from 'containers/AllObjectsPage';
 import AllTypesPage from 'containers/AllTypesPage';
+import ViewTypePage from 'containers/ViewTypePage';
 
 import GlobalStyle from '../../global-styles';
 
@@ -43,10 +44,11 @@ export default function App() {
       </Helmet>
       <Switch>
         <Route exact path="/" component={HomePage} />
-        <Route path="/new_object" component={NewObjectPage} />
         <Route path="/new_type" component={NewTypePage} />
+        <Route path="/new_object/:type_id" component={NewObjectPage} />
         <Route path="/all_types" component={AllTypesPage} />
-        <Route path="/all_objects" component={AllObjectsPage} />
+        <Route path="/all_objects/:type_id" component={AllObjectsPage} />
+        <Route path="/view_type/:type_id" component={ViewTypePage} />
         <Route path="" component={NotFoundPage} />
       </Switch>
       <GlobalStyle />

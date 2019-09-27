@@ -103,7 +103,7 @@ export default class NewTypePage extends React.Component {
     obj['type'] = 0;
     obj['name'] = this.state.typeName;
  	  createObject(obj).then((res, err) => {
-	    alert(JSON.stringify(res.data));
+	    alert(JSON.stringify(res));
 	  });
   }
 }

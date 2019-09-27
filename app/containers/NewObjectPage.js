@@ -80,7 +80,7 @@ export default class NewObjectPage extends React.Component {
 
   handleSubmit() {
  	  createObject(tuples2obj(this.state.fields)).then((res, err) => {
-	    alert(JSON.stringify(res.data));
+	    alert(JSON.stringify(res));
 	  });
   }
 }
