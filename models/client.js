@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 export function createObject(fields) {
-  return axios.put('/v1/objects/', fields);
+  return axios.put('/v1/objects/', fields).then(res => res.data);
 }
 
 export function getObjectByID(id) {
-  return axios.get('/v1/object/${id}');
+  return axios.get('/v1/object/${id}').then(res => res.data);
 }
 
 export function findObjects(query, skip, limit) {
@@ -15,5 +15,5 @@ export function findObjects(query, skip, limit) {
 	    skip: skip,
 	    limit: limit,
 	  },
-  });
+  }).then(res => res.data);
 }

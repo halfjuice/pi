@@ -12,6 +12,7 @@ export default class AllTypesPage extends React.Component {
 
   componentDidMount() {
     findObjects({type: 0}).then((res, err) => {
+      console.log(res);
       this.setState({types: res});
     })
   }
@@ -27,7 +28,7 @@ export default class AllTypesPage extends React.Component {
         <div class="ui top attached header">All Types</div>
         <div class="ui attached form segment">
           <div class="ui items">
-            {this.states.type.map(t =>
+            {this.state.types.map(t =>
               <div class="item">
                 <div class="content">
                   <a class="header">{t['name']}</a>
