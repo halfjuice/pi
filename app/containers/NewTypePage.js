@@ -82,11 +82,13 @@ export default class NewTypePage extends React.Component {
   handleFieldValueChange(evt, i, j) {
     const f = this.state.fields;
     f[i][j] = evt.target.value;
+    console.log(f);
     this.setState({ fields: f });
   }
 
   handleSubmit() {
     var obj = tuples2obj(this.state.fields);
+    console.log(this.state.fields, obj);
     obj['type'] = 0;
  	  createObject(obj).then((res, err) => {
 	    alert(JSON.stringify(res.data));
