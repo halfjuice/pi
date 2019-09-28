@@ -77,7 +77,7 @@ export default class NewTypePage extends React.Component {
                   value={tup[1]}
                   onChange={v => this.handleFieldValueChange(v, i, 1)}>
                   <option value="string">String</option>
-                  <option value="rel">Relationship</option>
+                  <option value="pointer">Pointer</option>
                 </select>
               </div>
             </div>

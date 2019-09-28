@@ -18,6 +18,7 @@ export default function HomePage() {
       <div>
       <div class="ui menu">
         <Link class="item" to="new_type">New Type</Link>
+        <Link class="item" to="new_rel_type">New Relationship Type</Link>
         <Link class="item" to="all_types">All Types</Link>
       </div>
         <table class="ui celled table">
