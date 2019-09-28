@@ -5,7 +5,7 @@ export function createObject(fields) {
 }
 
 export function getObjectByID(id) {
-  return axios.get('/v1/object/${id}').then(res => res.data);
+  return axios.get(`/v1/objects/${id}`).then(res => res.data);
 }
 
 export function findObjects(query, skip, limit) {

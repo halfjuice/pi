@@ -40,7 +40,7 @@ export default class NewObjectPage extends React.Component {
                 </Link>
                 <Link
                   class="mini ui button"
-                  to={'/create_object/' + this.props.match.params.type_id}
+                  to={'/new_object/' + this.props.match.params.type_id}
                 >
                   Create Object
                 </Link>

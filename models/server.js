@@ -15,7 +15,7 @@ module.exports = {
 	  });
 
     app.get('/v1/objects/:id', (req, res) => {
-      Server.getObjectById(req.params.id).then((r, err) => res.send(r));
+      Server.getObjectByID(req.params.id).then((r, err) => res.send(r));
 	  });
 
     app.get('/v1/objects', (req, res) => {
