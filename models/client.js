@@ -17,3 +17,14 @@ export function findObjects(query, skip, limit) {
 	  },
   }).then(res => res.data);
 }
+
+export function searchObjects(type, text, skip, limit) {
+  return axios.get('/v1/objects/search', {
+    params: {
+      type: type,
+      text: text,
+      skip: skip,
+      limit: limit,
+    },
+  }).then(res => res.data);
+}

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createObject } from '../../models/client';
+import { createObject, searchObjects } from '../../models/client';
 import { tuples2obj } from '../utils/helper';
+import { Dropdown } from 'semantic-ui-react';
 
 export default class NewRelationshipTypePage extends React.Component {
   constructor(props) {
@@ -10,36 +11,38 @@ export default class NewRelationshipTypePage extends React.Component {
       name: '',
       srcType: '',
       dstType: '',
+      srcTypeOptions: [],
+      dstTypeOptions: [],
     };
   }
 
   render() {
     return (
       <div>
-        <div class="ui menu">
-          <Link class="item" to="/">
+        <div className="ui menu">
+          <Link className="item" to="/">
             Home
           </Link>
         </div>
-        <div class="ui top attached header">New Relationship Type</div>
-        <div class="ui attached form segment">
-          <div class="two fields">
-            <div class="field">
+        <div className="ui top attached header">New Relationship Type</div>
+        <div className="ui attached form segment">
+          <div className="two fields">
+            <div className="field">
               <b>ID</b>
             </div>
-            <div class="field">&lt;Assigned&gt;</div>
+            <div className="field">&lt;Assigned&gt;</div>
           </div>
-          <div class="two fields">
-            <div class="field">
+          <div className="two fields">
+            <div className="field">
               <b>Type</b>
             </div>
-            <div class="field">&lt;Relationship Type&gt;</div>
+            <div className="field">&lt;Relationship Type&gt;</div>
           </div>
-          <div class="two fields">
-            <div class="field">
+          <div className="two fields">
+            <div className="field">
               <b>Name</b>
             </div>
-            <div class="field">
+            <div className="field">
               <input
                 placeholder={`Type Name`}
                 value={this.state.name}
@@ -47,31 +50,52 @@ export default class NewRelationshipTypePage extends React.Component {
               />
             </div>
           </div>
-          <div class="two fields">
-            <div class="field">
+          <div className="two fields">
+            <div className="field">
               <b>Source Type</b>
             </div>
-            <div class="field">
-              <input
-                placeholder={`Type Name`}
-                value={this.state.typeName}
-                onChange={v => this.setState({typeName: v.target.value})}
+            <div className="field">
+              <Dropdown
+                onChange={(e, v) => this.setState({srcType: v.value})}
+                onSearchChange={(e, v) => searchObjects(0, e.target.value, 0, 5).then(
+                  res => this.setState({
+                    srcTypeOptions: res.map(e => ({
+                      key: e._id,
+                      value: e._id,
+                      text: <p>{e.name}</p>,
+                    })),
+                  })
+                )}
+                search={options => options}
+                selection
+                options={this.state.srcTypeOptions}
               />
-              <div class="ui multiple search selection dropdown">
-                <input type="hidden" name="country" />
-                <i class="dropdown icon"></i>
-                <div class="default text">Select Country</div>
-                <div class="menu">
-                  <div class="item" data-value="af"><i class="af flag"></i>Afghanistan</div>
-                  <div class="item" data-value="ax"><i class="ax flag"></i>Aland Islands</div>
-                  <div class="item" data-value="al"><i class="al flag"></i>Albania</div>
-                  <div class="item" data-value="dz"><i class="dz flag"></i>Algeria</div>
-                </div>
-              </div>
+            </div>
+          </div>
+          <div className="two fields">
+            <div className="field">
+              <b>Destination Type</b>
+            </div>
+            <div className="field">
+              <Dropdown
+                onChange={(e, v) => this.setState({dstType: v.value})}
+                onSearchChange={(e, v) => searchObjects(0, e.target.value, 0, 5).then(
+                  res => this.setState({
+                    dstTypeOptions: res.map(e => ({
+                      key: e._id,
+                      value: e._id,
+                      text: <p>{e.name}</p>,
+                    })),
+                  })
+                )}
+                search={options => options}
+                selection
+                options={this.state.dstTypeOptions}
+              />
             </div>
           </div>
           <button
-            class="ui positive button"
+            className="ui positive button"
             onClick={() => this.handleSubmit()}>
             Create
           </button>
@@ -80,17 +104,8 @@ export default class NewRelationshipTypePage extends React.Component {
     );
   }
 
-  handleFieldValueChange(evt, i, j) {
-    const f = this.state.fields;
-    f[i][j] = evt.target.value;
-    this.setState({ fields: f });
-  }
-
   handleSubmit() {
-    var obj = tuples2obj(this.state.fields);
-    obj['type'] = 1;
-    obj['name'] = this.state.typeName;
- 	  createObject(obj).then((res, err) => {
+ 	  createObject({type: 1, srcType: this.state.srcType, dstType: this.state.dstType}).then((res, err) => {
 	    alert(JSON.stringify(res));
 	  });
   }
