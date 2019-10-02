@@ -32,12 +32,14 @@ export default class NewRelationshipTypePage extends React.Component {
             </div>
             <div className="field">&lt;Assigned&gt;</div>
           </div>
+
           <div className="two fields">
             <div className="field">
               <b>Type</b>
             </div>
             <div className="field">&lt;Relationship Type&gt;</div>
           </div>
+
           <div className="two fields">
             <div className="field">
               <b>Name</b>
@@ -50,6 +52,7 @@ export default class NewRelationshipTypePage extends React.Component {
               />
             </div>
           </div>
+
           <div className="two fields">
             <div className="field">
               <b>Source Type</b>

@@ -16,6 +16,7 @@ import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import NewObjectPage from 'containers/NewObjectPage';
 import NewTypePage from 'containers/NewTypePage';
 import NewRelationshipTypePage from 'containers/NewRelationshipTypePage';
+import NewViewPage from 'containers/NewViewPage';
 import AllObjectsPage from 'containers/AllObjectsPage';
 import AllTypesPage from 'containers/AllTypesPage';
 import AllRelationTypesPage from 'containers/AllRelationTypesPage';
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/new_type" component={NewTypePage} />
         <Route path="/new_rel_type" component={NewRelationshipTypePage} />
         <Route path="/new_object/:type_id" component={NewObjectPage} />
+        <Route path="/new_view" component={NewViewPage} />
         <Route path="/all_types" component={AllTypesPage} />
         <Route path="/all_objects/:type_id" component={AllObjectsPage} />
         <Route path="/all_rel_types" component={AllRelationTypesPage} />
