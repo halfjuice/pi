@@ -20,6 +20,7 @@ export default function HomePage() {
         <Link class="item" to="new_type">New Type</Link>
         <Link class="item" to="new_rel_type">New Relationship Type</Link>
         <Link class="item" to="all_types">All Types</Link>
+        <Link class="item" to="all_rel_types">All Relation Types</Link>
       </div>
         <table class="ui celled table">
           <thead>

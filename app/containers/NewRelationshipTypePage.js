@@ -105,7 +105,7 @@ export default class NewRelationshipTypePage extends React.Component {
   }
 
   handleSubmit() {
- 	  createObject({type: 1, srcType: this.state.srcType, dstType: this.state.dstType}).then((res, err) => {
+ 	  createObject({type: 1, name: this.state.name, srcType: this.state.srcType, dstType: this.state.dstType}).then((res, err) => {
 	    alert(JSON.stringify(res));
       this.setState({
         srcType: '',
