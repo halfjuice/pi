@@ -29,7 +29,11 @@ const VIEW_TYPE_SPECS = {
   },
   'tree': {
     name: 'Tree View',
-    desc: 'Tree View present related object in a tree structured starting from a node.',
+    desc: 'Tree View present related object in a tree structured starting from a root object.',
+  },
+  'calendar': {
+    name: 'Calendar View',
+    desc: 'Calendar View present object with datetime property in calendar form.',
   },
 }
 

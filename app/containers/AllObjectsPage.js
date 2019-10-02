@@ -56,7 +56,7 @@ export default class AllObjectsPage extends React.Component {
             Home
           </Link>
         </div>
-        <div class="ui top attached header">All Objects{this.state.type ? ' of ' + this.state.type['name'] : null}</div>
+        <div class="ui top attached header">All {this.state.type && (this.state.type['name'] + ' ')}Object</div>
         <div class="ui attached form segment">
           {content}
         </div>
