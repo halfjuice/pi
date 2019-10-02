@@ -37,7 +37,11 @@ export default class AllObjectsPage extends React.Component {
 
           <tbody>
             {(this.state.objects || []).map(o => (
-              <tr>{typeTuples.map(t => <td>{o[t[0]]}</td>)}</tr>
+              <tr>
+                {typeTuples.map(t => <td>
+                  {t[0] == '_id' ? <Link to={'/view_object/' + o[t[0]]}>{o[t[0]]}</Link> : o[t[0]]}
+                </td>)}
+              </tr>
             ))}
           </tbody>
         </table>

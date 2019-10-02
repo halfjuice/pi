@@ -76,9 +76,9 @@ export default class NewObjectPage extends React.Component {
   }
 
   handleSubmit() {
-    console.log(this.state.value);
  	  createObject(this.state.value).then((res, err) => {
 	    alert(JSON.stringify(res));
+      this.setState({value: {type: this.props.match.params.type_id}});
 	  });
   }
 }

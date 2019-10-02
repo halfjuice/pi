@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { getObjectByID } from '../../models/client';
 
-export default class NewObjectPage extends React.Component {
+export default class ViewTypePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
