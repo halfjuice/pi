@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createObject, searchObjects } from '../../models/client';
 import { tuples2obj } from '../utils/helper';
-import { Dropdown } from 'semantic-ui-react';
+import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 
 export default class NewRelationshipTypePage extends React.Component {
   constructor(props) {
@@ -11,8 +11,6 @@ export default class NewRelationshipTypePage extends React.Component {
       name: '',
       srcType: '',
       dstType: '',
-      srcTypeOptions: [],
-      dstTypeOptions: [],
     };
   }
 
@@ -58,20 +56,9 @@ export default class NewRelationshipTypePage extends React.Component {
               <b>Source Type</b>
             </div>
             <div className="field">
-              <Dropdown
-                onChange={(e, v) => this.setState({srcType: v.value})}
-                onSearchChange={(e, v) => searchObjects(0, e.target.value, 0, 5).then(
-                  res => this.setState({
-                    srcTypeOptions: res.map(e => ({
-                      key: e._id,
-                      value: e._id,
-                      text: <p>{e.name}</p>,
-                    })),
-                  })
-                )}
-                search={options => options}
-                selection
-                options={this.state.srcTypeOptions}
+              <ObjectSearchDropdown
+                onChange={v => this.setState({srcType: v._id})}
+                onSearch={txt => searchObjects(0, txt, 0, 5)}
               />
             </div>
           </div>
@@ -80,20 +67,9 @@ export default class NewRelationshipTypePage extends React.Component {
               <b>Destination Type</b>
             </div>
             <div className="field">
-              <Dropdown
-                onChange={(e, v) => this.setState({dstType: v.value})}
-                onSearchChange={(e, v) => searchObjects(0, e.target.value, 0, 5).then(
-                  res => this.setState({
-                    dstTypeOptions: res.map(e => ({
-                      key: e._id,
-                      value: e._id,
-                      text: <p>{e.name}</p>,
-                    })),
-                  })
-                )}
-                search={options => options}
-                selection
-                options={this.state.dstTypeOptions}
+              <ObjectSearchDropdown
+                onChange={v => this.setState({dstType: v._id})}
+                onSearch={txt => searchObjects(0, txt, 0, 5)}
               />
             </div>
           </div>

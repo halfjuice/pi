@@ -88,7 +88,7 @@ export default class NewViewPage extends React.Component {
 
           <p>{this.state.viewType && VIEW_TYPES[this.state.viewType].desc}</p>
 
-          
+
 
           <button
             class="ui positive button"

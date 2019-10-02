@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createObject, getObjectByID, findObjects, searchObjects } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
-import { Dropdown } from 'semantic-ui-react';
+import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 
 export default class ViewObjectPage extends React.Component {
   constructor(props) {
@@ -39,7 +39,6 @@ export default class ViewObjectPage extends React.Component {
               relSections[r.type] = {
                 relType: relType,
                 rels: [r],
-                targetOptions: [],
               };
             }));
           } else {
@@ -90,22 +89,11 @@ export default class ViewObjectPage extends React.Component {
         </div>
 
         <br />
-        <Dropdown
+        <ObjectSearchDropdown
           placeholder="Search Relation Type to Add Section"
-          onChange={(e, v) => this.handleAddSection(v.value)}
-          onSearchChange={(e, v) => searchObjects(1, e.target.value, 0, 5).then(
-            res => this.setState({
-              secRelTypeOptions: res.map(e => ({
-                key: e._id,
-                value: e._id,
-                text: <p>{e.name}</p>,
-              })),
-            })
-          )}
+          onChange={v => this.handleAddSection(v)}
+          onSearch={txt => searchObjects(1, txt, 0, 5)}
           fluid
-          search={options => options}
-          selection
-          options={this.state.secRelTypeOptions}
         />
 
         {this.state.relSections != null && this.state.relSections.map(this.renderRelationSection.bind(this))}
@@ -124,48 +112,35 @@ export default class ViewObjectPage extends React.Component {
           return <p><Link to={'view_object/' + target}>{target}</Link></p>
         })}
 
-        <Dropdown
+        <ObjectSearchDropdown
           placeholder={`Search Object to Relate as "${relSec.relType.name}"`}
-          onChange={(e, v) => {
+          onChange={v => {
             createObject({
               _isRelation: 1,
               type: relSec.relType._id,
-              src: inverse ? v.value : this.props.match.params.obj_id,
-              dst: inverse ? this.props.match.params.obj_id : v.value,
+              src: inverse ? v._id : this.props.match.params.obj_id,
+              dst: inverse ? this.props.match.params.obj_id : v._id,
             }).then(res => {
               alert(JSON.stringify(res));
             });
           }}
-          onSearchChange={(e, v) => searchObjects(targetType, e.target.value, 0, 5).then(res => {
-            this.state.relSections[idx].targetOptions = res.map(elem => ({
-              key: elem._id,
-              value: elem._id,
-              text: <p>{elem.name || elem._id}</p>
-            }));
-            this.setState({relSections: this.state.relSections});
-          })}
+          onSearch={txt => searchObjects(targetType, txt, 0, 5)}
           fluid
-          search={options => options}
-          selection
-          options={this.state.relSections[idx].targetOptions}
         />
       </div>
     ];
   }
 
-  handleAddSection(relTypeId) {
+  handleAddSection(relType) {
     for (var i=0; i<this.state.relSections.length; i++) {
-      if (this.state.relSections[i].relType._id == relTypeId) {
+      if (this.state.relSections[i].relType._id == relType._id) {
         break;
       }
     }
 
-    getObjectByID(relTypeId).then(relType => {
-      this.setState({relSections: this.state.relSections.concat([{
-        relType: relType,
-        rels: [],
-        targetOptions: [],
-      }])});
-    });
+    this.setState({relSections: this.state.relSections.concat([{
+      relType: relType,
+      rels: [],
+    }])});
   }
 }
