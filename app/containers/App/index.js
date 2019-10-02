@@ -22,6 +22,7 @@ import AllTypesPage from 'containers/AllTypesPage';
 import AllRelationTypesPage from 'containers/AllRelationTypesPage';
 import ViewTypePage from 'containers/ViewTypePage';
 import ViewObjectPage from 'containers/ViewObjectPage';
+import ViewPage from 'containers/ViewPage';
 
 import GlobalStyle from '../../global-styles';
 
@@ -57,6 +58,7 @@ export default function App() {
         <Route path="/all_rel_types" component={AllRelationTypesPage} />
         <Route path="/view_type/:type_id" component={ViewTypePage} />
         <Route path="/view_object/:obj_id" component={ViewObjectPage} />
+        <Route path="/view/:view_id" component={ViewPage} />
         <Route path="" component={NotFoundPage} />
       </Switch>
       <GlobalStyle />
