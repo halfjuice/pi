@@ -1,6 +1,6 @@
 const nedb = require('nedb-promises');
 
-const db = nedb.create('../temp/data.nedb');
+const db = nedb.create('./temp/data.nedb');
 
 const Server = {
   createObject: fields => db.insert(fields),

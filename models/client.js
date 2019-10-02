@@ -28,3 +28,33 @@ export function searchObjects(type, text, skip, limit) {
     },
   }).then(res => res.data);
 }
+
+export function createDummyData() {
+  return Promise.all([
+    createObject({type: 0, name: 'Task', description: 'text'}),
+    createObject({type: 0, name: 'Tag', description: 'text'}),
+  ]).then(([taskType, tagType]) => {
+    return Promise.all([
+      createObject({type: 1, name: 'Children', srcType: taskType._id, dstType: taskType._id}),
+      createObject({type: 1, name: 'Tag', srcType: taskType._id, dstType: tagType._id}),
+    ]);
+  }).then(([childrenRelType, tagRelType]) => {
+    let taskTypeID = childrenRelType.srcType;
+    let tagTypeID = tagRelType.dstType;
+    return Promise.all([
+      createObject({type: taskTypeID, name: 'Daily Work'}),
+      createObject({type: taskTypeID, name: 'Buy the milk'}),
+      createObject({type: tagTypeID, name: 'Grocery'}),
+
+      // View
+      createObject({type: 2, name: 'New Task', viewType: 'create', objectType: taskTypeID}),
+      createObject({type: 2, name: 'New Tag', viewType: 'create', objectType: tagTypeID}),
+    ]).then(([task1, task2, tag1, view1, view2]) => {
+      return Promise.all([
+        createObject({_isRelation: 1, type: childrenRelType, src: task1, dst: task2}),
+        createObject({_isRelation: 1, type: tagRelType, src: task2, dst: tag1}),
+      ]);
+    });;
+  })
+
+}

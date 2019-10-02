@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { findObjects } from '../../../models/client';
+import { findObjects, createDummyData } from '../../../models/client';
 
 export default class HomePage extends React.Component {
   constructor(props) {
@@ -34,9 +34,14 @@ export default class HomePage extends React.Component {
           <Link className="item" to="new_rel_type">New Relationship Type</Link>
           <Link className="item" to="all_types">All Types</Link>
           <Link className="item" to="all_rel_types">All Relation Types</Link>
+          <a className="item" onClick={
+            () => createDummyData().then(() => alert('Success!'))
+          }>
+            Create Dummy Data
+          </a>
         </div>
 
-        <div class="ui menu">
+        <div className="ui menu">
           {this.state.views.map((v, i) => {
             return <Link className="item" to={`/view/${v._id}`} key={`view_button_${i}`}>{v.name}</Link>;
           })}

@@ -1,26 +1,36 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createObject, getObjectByID } from '../../models/client';
+import { createObject, getObjectByID, searchObjects } from '../../models/client';
 import { tuples2obj, obj2tuples } from '../utils/helper';
 import { Dropdown } from 'semantic-ui-react';
+import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 
-const VIEW_TYPES = {
+const VIEW_TYPE_SPECS = {
   'single': {
     name: 'Single View',
     desc: 'Single View presents single object data based on query',
+    specifyType: true,
+    specifyQuery: true,
   },
   'table': {
     name: 'Table View',
     desc: 'Table View presents data in the form of table.',
+    specifyType: true,
+    specifyQuery: true,
   },
   'create': {
     name: 'Create View',
     desc: 'Create View allows you to create object.',
+    specifyType: true,
   },
   'multi': {
     name: 'Multi View',
     desc: 'Multi View allows you to combine multiple views together.',
-  }
+  },
+  'tree': {
+    name: 'Tree View',
+    desc: 'Tree View present related object in a tree structured starting from a node.',
+  },
 }
 
 export default class NewViewPage extends React.Component {
@@ -29,10 +39,13 @@ export default class NewViewPage extends React.Component {
     this.state = {
       name: '',
       viewType: null,
+      objectType: null,
     };
   }
 
   render() {
+    let viewTypeSpec = this.getViewTypeSpec();
+
     return (
       <div>
         <div class="ui menu">
@@ -79,16 +92,27 @@ export default class NewViewPage extends React.Component {
               <Dropdown
                 onChange={(e, v) => this.setState({viewType: v.value})}
                 selection
-                options={obj2tuples(VIEW_TYPES).map(t => ({
+                options={obj2tuples(VIEW_TYPE_SPECS).map(t => ({
                   key: t[0], value: t[0], text: t[1].name,
                 }))}
               />
             </div>
           </div>
 
-          <p>{this.state.viewType && VIEW_TYPES[this.state.viewType].desc}</p>
+          <p>{this.state.viewType && VIEW_TYPE_SPECS[this.state.viewType].desc}</p>
 
-
+          {viewTypeSpec && viewTypeSpec.specifyType &&
+            <div class="two fields">
+              <div class="field">
+                <b>Object Type</b>
+              </div>
+              <div class="field">
+                <ObjectSearchDropdown
+                  onChange={t => this.setState({objectType: t})}
+                  onSearch={txt => searchObjects(0, txt, 0, 5)}
+                />
+              </div>
+            </div>}
 
           <button
             class="ui positive button"
@@ -111,8 +135,20 @@ export default class NewViewPage extends React.Component {
     if (!this.state.viewType) {
       return;
     }
- 	  createObject({type: 2, viewType: this.state.viewType}).then((res, err) => {
+    let view = {type: 2, viewType: this.state.viewType, name: this.state.name};
+    let viewTypeSpec = this.getViewTypeSpec();
+    if (viewTypeSpec.specifyType) {
+      if (!this.state.objectType) {
+        return;
+      }
+      view.objectType = this.state.objectType._id;
+    }
+ 	  createObject(view).then((res, err) => {
 	    alert(JSON.stringify(res));
 	  });
+  }
+
+  getViewTypeSpec() {
+    return this.state.viewType && VIEW_TYPE_SPECS[this.state.viewType];
   }
 }
