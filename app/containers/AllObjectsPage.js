@@ -25,20 +25,21 @@ export default class AllObjectsPage extends React.Component {
   render() {
     var content = null;
     if (this.state.type) {
-      let typeTuples = obj2tuples(this.state.type).filter(t => ['name'].indexOf(t[0]) == -1);
+      let typeTuples = obj2tuples(this.state.type);
+      //let typeTuples = obj2tuples(this.state.type).filter(t => ['name'].indexOf(t[0]) == -1);
 
       content = (
         <table class="ui celled table">
           <thead>
             <tr>
-              {typeTuples.map(t => <th>{t[0]}</th>)}
+              {typeTuples.map((t, i) => <th key={`hdr_col_${i}`}>{t[0]}</th>)}
             </tr>
           </thead>
 
           <tbody>
-            {(this.state.objects || []).map(o => (
-              <tr>
-                {typeTuples.map(t => <td>
+            {(this.state.objects || []).map((o, i) => (
+              <tr key={`cell_row_${i}`}>
+                {typeTuples.map((t, j) => <td key={`cell_col_${j}`}>
                   {t[0] == '_id' ? <Link to={'/view_object/' + o[t[0]]}>{o[t[0]]}</Link> : o[t[0]]}
                 </td>)}
               </tr>

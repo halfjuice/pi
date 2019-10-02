@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createObject, getObjectByID, findObjects, searchObjects } from '../../models/client';
+import { createObject, getObjectByID, findObjectsByIDs, findObjects, searchObjects } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 
@@ -45,7 +45,18 @@ export default class ViewObjectPage extends React.Component {
             relSections[r.type].rels.push(r)
           }
         });
+        // TODO: Use groupby concept to refactor
         Promise.all(promises).then(() => {
+          let ps = [];
+          for (var kk in relSections) {
+            ((k) => {
+              ps.push(findObjectsByIDs(relSections[k].rels.map(r => r.src == obj_id ? r.dst : r.src)).then(data => {
+                relSections[k].relTargets = data;
+              }));
+            })(kk)
+          }
+          return Promise.all(ps);
+        }).then(() => {
           this.setState({relSections: obj2tuples(relSections).map(tup => tup[1])});
         });
       });
@@ -102,14 +113,19 @@ export default class ViewObjectPage extends React.Component {
   }
 
   renderRelationSection(relSec, idx) {
-    var inverse = relSec.relType.srcType != this.state.obj.type;
-    var targetType = inverse ? relSec.relType.dstType : relSec.relType.srcType;
+    var targetType = relSec.relType.dstType == this.state.obj._id ? relSec.relType.srcType : relSec.relType.dstType;
     return [
-      <div key={`relSecHeader${idx}`} className="ui top attached header">Relation {relSec.relType.name} {inverse && '(Inversed)'}</div>,
+      <div key={`relSecHeader${idx}`} className="ui top attached header">Relation - {relSec.relType.name}</div>,
       <div key={`relSecContent${idx}`} className="ui attached form segment">
-        {relSec.rels.map(r => {
-          var target = inverse ? r.src : r.dst;
-          return <p><Link to={'view_object/' + target}>{target}</Link></p>
+        {relSec.rels.map((r, i) => {
+          var inversed = r.src != this.props.match.params.obj_id;
+          var target = inversed ? r.src : r.dst;
+          var targetDOM = <Link to={`/view_object/${target}`}>{relSec.relTargets[i].name} ({target})</Link>;
+          return (
+            <p key={`viewObjectLink${i}`}>
+              {inversed ? targetDOM : <i>This</i>} to {inversed ? <i>This</i> : targetDOM}
+            </p>
+          )
         })}
 
         <ObjectSearchDropdown
@@ -141,6 +157,7 @@ export default class ViewObjectPage extends React.Component {
     this.setState({relSections: this.state.relSections.concat([{
       relType: relType,
       rels: [],
+      relTargets: [],
     }])});
   }
 }

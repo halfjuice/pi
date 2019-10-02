@@ -12,7 +12,6 @@ export default class AllTypesPage extends React.Component {
 
   componentDidMount() {
     findObjects({type: 0}).then((res, err) => {
-      console.log(res);
       this.setState({types: res});
     })
   }
@@ -20,19 +19,19 @@ export default class AllTypesPage extends React.Component {
   render() {
     return (
       <div>
-        <div class="ui menu">
-          <Link class="item" to="/">
+        <div className="ui menu">
+          <Link className="item" to="/">
             Home
           </Link>
         </div>
-        <div class="ui top attached header">All Types</div>
-        <div class="ui attached form segment">
-          <div class="ui items">
-            {this.state.types.map(t =>
-              <div class="item">
-                <div class="content">
-                  <Link class="header" to={'/view_type/'+t['_id']}>{t['name']}</Link>
-                  <div class="description">
+        <div className="ui top attached header">All Types</div>
+        <div className="ui attached form segment">
+          <div className="ui items">
+            {this.state.types.map((t, i) =>
+              <div key={`type_item_${i}`} className="item">
+                <div className="content">
+                  <Link className="header" to={'/view_type/'+t['_id']}>{t['name']}</Link>
+                  <div className="description">
                     <p>Description for object</p>
                   </div>
                 </div>

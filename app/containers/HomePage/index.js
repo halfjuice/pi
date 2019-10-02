@@ -34,9 +34,11 @@ export default class HomePage extends React.Component {
           <Link className="item" to="new_rel_type">New Relationship Type</Link>
           <Link className="item" to="all_types">All Types</Link>
           <Link className="item" to="all_rel_types">All Relation Types</Link>
-          <a className="item" onClick={
-            () => createDummyData().then(() => alert('Success!'))
-          }>
+          <a className="item" onClick={() => {
+            if (confirm('Are you sure to create set of dummy data?')) {
+              createDummyData().then(() => alert('Success!'));
+            };
+          }}>
             Create Dummy Data
           </a>
         </div>
