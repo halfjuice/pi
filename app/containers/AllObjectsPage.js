@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { findObjects, getObjectByID } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
+import ObjectTableView from '../components/ObjectTableView';
 
 export default class AllObjectsPage extends React.Component {
   constructor(props) {
@@ -23,32 +24,6 @@ export default class AllObjectsPage extends React.Component {
   }
 
   render() {
-    var content = null;
-    if (this.state.type) {
-      let typeTuples = obj2tuples(this.state.type);
-      //let typeTuples = obj2tuples(this.state.type).filter(t => ['name'].indexOf(t[0]) == -1);
-
-      content = (
-        <table class="ui celled table">
-          <thead>
-            <tr>
-              {typeTuples.map((t, i) => <th key={`hdr_col_${i}`}>{t[0]}</th>)}
-            </tr>
-          </thead>
-
-          <tbody>
-            {(this.state.objects || []).map((o, i) => (
-              <tr key={`cell_row_${i}`}>
-                {typeTuples.map((t, j) => <td key={`cell_col_${j}`}>
-                  {t[0] == '_id' ? <Link to={'/view_object/' + o[t[0]]}>{o[t[0]]}</Link> : o[t[0]]}
-                </td>)}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      );
-    }
-
     return (
       <div>
         <div class="ui menu">
@@ -58,7 +33,7 @@ export default class AllObjectsPage extends React.Component {
         </div>
         <div class="ui top attached header">All {this.state.type && (this.state.type['name'] + ' ')}Object</div>
         <div class="ui attached form segment">
-          {content}
+          <ObjectTableView type={this.state.type} objects={this.state.objects} />
         </div>
       </div>
     );
