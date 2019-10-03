@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createObject, getObjectByID } from '../../models/client';
+import { createObject, getObjectByID, searchObjects } from '../../models/client';
 import { tuples2obj, obj2tuples } from '../utils/helper';
+import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 
 export default class CreateObjectForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       type: null,
-      value: {type: props.typeID},
+      value: {type: props.typeID, name: ''},
     };
   }
 
@@ -19,42 +20,50 @@ export default class CreateObjectForm extends React.Component {
   render() {
     return (
       <div>
-        <div class="ui top attached header">New Object</div>
-        <div class="ui attached form segment">
-          <div class="two fields">
-            <div class="field">
+        <div className="ui top attached header">New Object</div>
+        <div className="ui attached form segment">
+          <div className="two fields">
+            <div className="field">
               <b>ID</b>
             </div>
-            <div class="field">&lt;Assigned&gt;</div>
+            <div className="field">&lt;Assigned&gt;</div>
           </div>
           {this.state.type
-            ? <div class="two fields">
-                <div class="field">
+            ? <div className="two fields">
+                <div className="field">
                   <b>Type</b>
                 </div>
-                <div class="field">
+                <div className="field">
                   <Link to={'/view_type/' + this.state.type['_id']}>{this.state.type['name']}</Link>
                 </div>
               </div>
             : null}
-          {obj2tuples(this.state.type).map(tup =>
+          <div className="two fields">
+            <div className="field">
+              <b>Name</b>
+            </div>
+            <div className="field">
+              <input
+                placeholder="Object Name"
+                value={this.state.value.name}
+                onChange={v => this.handleFieldValueChange(v.target.value, 'name')}
+              />
+            </div>
+          </div>
+          {obj2tuples(this.state.type).map((tup, i) =>
             tup[0] == '_id' || tup[0] == 'type' || tup[0] == 'name'
               ? null
-              : <div class="two fields">
-                  <div class="field">
+              : <div key={`field_${i}`} className="two fields">
+                  <div className="field">
                     {tup[0]}
                   </div>
-                  <div class="field">
-                    <input
-                      placeholder={`${tup[0]} Value`}
-                      value={this.state.value[tup[0]] || ''}
-                      onChange={v => this.handleFieldValueChange(v, tup[0])}
-                    />
+                  <div className="field">
+                    {this.renderValueInput(tup)}
                   </div>
                 </div>
           )}
           <button
-            class="ui positive button"
+            className="ui positive button"
             onClick={() => this.handleSubmit()}
           >
             Create
@@ -64,16 +73,51 @@ export default class CreateObjectForm extends React.Component {
     );
   }
 
-  handleFieldValueChange(evt, k) {
-    const v = this.state.value;
-    v[k] = evt.target.value;
-    this.setState({ value: v });
+  renderValueInput(tup) {
+    if (tup[1] == 'text') {
+      return (
+        <input
+          placeholder={`${tup[0]} Value`}
+          value={this.state.value[tup[0]] || ''}
+          onChange={v => this.handleFieldValueChange(v.target.value, tup[0])}
+        />
+      );
+    } else if (tup[1].fieldType == 'relation') {
+      return (
+        <ObjectSearchDropdown
+          placeholder={`${tup[0]} Value (Related Object)`}
+          onChange={v => this.handleFieldValueChange(v, tup[0])}
+          onSearch={txt => searchObjects(tup[1].objectType, txt, 0, 5)}
+          fluid
+        />
+      )
+    } else if (tup[1].fieldType == 'multi_relation') {
+      // TODO: Fix this!
+      // Put selected tag in options so they don't disappear
+      return (
+        <ObjectSearchDropdown
+          placeholder={`${tup[0]} Value (Related Objects)`}
+          onChange={v => this.handleFieldValueChange(v, tup[0])}
+          onSearch={txt => searchObjects(tup[1].objectType, txt, 0, 5)}
+          multiple
+          fluid
+        />
+      )
+    } else {
+      return <p>Unknown field {tup[1]}</p>;
+    }
+  }
+
+  handleFieldValueChange(v, k) {
+    const vv = this.state.value;
+    vv[k] = v;
+    this.setState({ value: vv });
   }
 
   handleSubmit() {
  	  createObject(this.state.value).then((res, err) => {
 	    alert(JSON.stringify(res));
-      this.setState({value: {type: this.props.match.params.type_id}});
+      this.setState({value: {type: this.props.typeID}});
 	  });
   }
 }

@@ -12,8 +12,8 @@ export default class NewObjectPage extends React.Component {
   render() {
     return (
       <div>
-        <div class="ui menu">
-          <Link class="item" to="/">
+        <div className="ui menu">
+          <Link className="item" to="/">
             Home
           </Link>
         </div>

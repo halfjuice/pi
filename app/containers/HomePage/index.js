@@ -2,14 +2,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { findObjects, createDummyData } from '../../../models/client';
+import { findObjects, searchObjects, createDummyData } from '../../../models/client';
+
+import { Dropdown } from 'semantic-ui-react';
+import ObjectSearchDropdown from '../../components/ObjectSearchDropdown';
 
 export default class HomePage extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      views: []
+      views: [],
+      options: [],
     };
   }
 
@@ -28,7 +32,7 @@ export default class HomePage extends React.Component {
         </Helmet>
 
         <div className="ui grid">
-          <div class="four wide column">
+          <div class="six wide column">
             <div className="ui vertical menu">
               <div className="item">
                 <div className="header">App</div>
@@ -58,8 +62,31 @@ export default class HomePage extends React.Component {
               </div>
             </div>
           </div>
-          <div class="eight wide column">
-
+          <div class="ten wide column">
+            <Dropdown
+              placeholder='State'
+              fluid
+              multiple
+              search
+              selection
+              onSearchChange={(e, v) => {
+                searchObjects(0, e.target.value, 0, 5).then(res => {
+                  this.setState({
+                    options: res.map(e => ({
+                      key: e._id,
+                      value: e._id,
+                      text: e.name,
+                    })),
+                  });
+                });
+              }}
+              options={this.state.options}
+            />
+            <ObjectSearchDropdown
+              fluid
+              multiple
+              onSearch={txt => searchObjects(0, txt, 0, 5)}
+            />
           </div>
         </div>
       </article>

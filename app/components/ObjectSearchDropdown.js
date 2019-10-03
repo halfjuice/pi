@@ -7,13 +7,14 @@ export default class ObjectSearchDropdown extends React.Component {
     super(props);
     this.state = {
       options: [],
+      selected: [],
       raw: [],
     };
   }
 
   render() {
     var passedProps = {};
-    ['fluid', 'placeholder'].forEach(p => {
+    ['fluid', 'placeholder', 'multiple'].forEach(p => {
       passedProps[p] = this.props[p];
     });
 
@@ -23,8 +24,10 @@ export default class ObjectSearchDropdown extends React.Component {
           if (!this.props.onChange) {
             return;
           }
-
-          this.props.onChange(this.findRaw(v.value));
+          let objs = this.findRaw(v.value, this.state.selected);
+          this.setState({selected: objs}, () => {
+            this.props.onChange(objs);
+          });
         }}
         onSearchChange={(e, v) => {
           if (!this.props.onSearch) {
@@ -38,9 +41,9 @@ export default class ObjectSearchDropdown extends React.Component {
             });
           });
         }}
-        search={options => options}
+        search
         selection
-        options={this.state.options}
+        options={this.state.options.concat(this.postProcess(this.state.selected))}
         {...passedProps}
       />
     );
@@ -50,14 +53,22 @@ export default class ObjectSearchDropdown extends React.Component {
     return data.map(e => ({
       key: e._id,
       value: e._id,
-      text: <p>{this.props.renderText ? this.props.renderText(e) : e.name}</p>
+      text: this.props.renderText ? this.props.renderText(e) : e.name,
     }));
   }
 
-  findRaw(objID) {
+  findRaw(objIDorList, selected) {
+    if (objIDorList instanceof Array) {
+      return objIDorList.map(e => this.findRaw(e, selected));
+    }
     for (var i=0; i<this.state.raw.length; i++) {
-      if (this.state.raw[i]._id == objID) {
+      if (this.state.raw[i]._id == objIDorList) {
         return this.state.raw[i];
+      }
+    }
+    for (var i=0; i<selected.length; i++) {
+      if (selected[i]._id == objIDorList) {
+        return selected[i];
       }
     }
   }
