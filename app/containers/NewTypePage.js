@@ -20,6 +20,82 @@ export default class NewTypePage extends React.Component {
             Home
           </Link>
         </div>
+
+        <div class="ui grid">
+          <div class="four wide column">
+            <h2>New Type</h2>
+          </div>
+          <div class="twelve wide right aligned column">
+            <div class="mini ui icon buttons">
+              <button
+                class="ui green button"
+                onClick={() =>
+                  this.setState({
+                    fields: this.state.fields.concat([['', 'string']]),
+                  })
+                }
+              >
+                <i class="plus icon" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <table className="ui form table">
+          <tbody>
+            <tr>
+              <td><b>ID</b></td>
+              <td>&lt;Assigned&gt;</td>
+            </tr>
+            <tr>
+              <td><b>Type</b></td>
+              <td>&lt;Type&gt;</td>
+            </tr>
+            <tr>
+              <td><b>Name</b></td>
+              <td>
+                <input
+                  placeholder={`Type Name`}
+                  value={this.state.typeName}
+                  onChange={v => this.setState({typeName: v.target.value})}
+                />
+              </td>
+            </tr>
+            {this.state.fields.map((tup, i) => (
+              <tr>
+                <td>
+                  <input
+                    placeholder={`Field Name ${i + 1}`}
+                    value={tup[0]}
+                    onChange={v => this.handleFieldValueChange(v, i, 0)}
+                  />
+                </td>
+                <td>
+                  <select
+                    class="ui search dropdown"
+                    value={tup[1]}
+                    onChange={v => this.handleFieldValueChange(v, i, 1)}>
+                    <option value="string">String</option>
+                    <option value="pointer">Pointer</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="2">
+                <button
+                  class="ui right floated positive button"
+                  onClick={() => this.handleSubmit()}>
+                  Create
+                </button>
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+
+
         <div class="ui top attached header">New Type</div>
         <div class="ui attached form segment">
           <div class="ui right aligned grid">
