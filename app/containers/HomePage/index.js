@@ -21,35 +21,46 @@ export default class HomePage extends React.Component {
     return (
       <article>
         <Helmet>
-          <title>Hello Home Page</title>
           <meta
             name="description"
             content="A React.js Boilerplate application homepage"
           />
         </Helmet>
-        <div>
 
-        <div className="ui menu">
-          <Link className="item" to="new_type">New Type</Link>
-          <Link className="item" to="new_rel_type">New Relationship Type</Link>
-          <Link className="item" to="all_types">All Types</Link>
-          <Link className="item" to="all_rel_types">All Relation Types</Link>
-          <a className="item" onClick={() => {
-            if (confirm('Are you sure to create set of dummy data?')) {
-              createDummyData().then(() => alert('Success!'));
-            };
-          }}>
-            Create Dummy Data
-          </a>
-        </div>
+        <div className="ui grid">
+          <div class="four wide column">
+            <div className="ui vertical menu">
+              <div className="item">
+                <div className="header">App</div>
+                <div className="menu">
+                  {this.state.views.map((v, i) => {
+                    return <Link className="item" to={`/view/${v._id}`} key={`view_button_${i}`}>{v.name}</Link>;
+                  })}
+                  <Link className="item" to="new_view">New View</Link>
+                </div>
+              </div>
 
-        <div className="ui menu">
-          {this.state.views.map((v, i) => {
-            return <Link className="item" to={`/view/${v._id}`} key={`view_button_${i}`}>{v.name}</Link>;
-          })}
-          <Link className="item" to="new_view">New View</Link>
-        </div>
+              <div className="item">
+                <div className="header">Admin</div>
+                <div className="menu">
+                  <Link className="item" to="new_type">New Type</Link>
+                  <Link className="item" to="new_rel_type">New Relationship Type</Link>
+                  <Link className="item" to="all_types">All Types</Link>
+                  <Link className="item" to="all_rel_types">All Relation Types</Link>
+                  <a className="item" onClick={() => {
+                    if (confirm('Are you sure to create set of dummy data?')) {
+                      createDummyData().then(() => alert('Success!'));
+                    };
+                  }}>
+                    Create Dummy Data
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="eight wide column">
 
+          </div>
         </div>
       </article>
     );

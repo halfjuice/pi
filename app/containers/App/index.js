@@ -38,8 +38,8 @@ export default function App() {
   return (
     <AppWrapper>
       <Helmet
-        titleTemplate="%s - React.js Boilerplate"
-        defaultTitle="React.js Boilerplate"
+        titleTemplate="%s - Notely"
+        defaultTitle="Notely"
       >
         <link
           rel="stylesheet"
