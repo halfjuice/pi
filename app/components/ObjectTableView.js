@@ -25,13 +25,28 @@ export default class ObjectTableView extends React.Component {
         <tbody>
           {(this.props.objects || []).map((o, i) => (
             <tr key={`cell_row_${i}`}>
-              {typeTuples.map((t, j) => <td key={`cell_col_${j}`}>
-                {t[0] == '_id' ? <Link to={'/view_object/' + o[t[0]]}>{o[t[0]]}</Link> : o[t[0]]}
-              </td>)}
+              {typeTuples.map((t, j) =>
+                <td key={`cell_col_${j}`}>
+                  {this.renderCell(o, t)}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
     );
+  }
+
+  renderCell(o, t) {
+    let k = t[0];
+    let typ = t[1];
+    let v = o[k];
+    if (k == '_id') {
+      return <Link to={`/view_object/${v}`}>{v}</Link>;
+    } else if (typ == 'color') {
+      return <span style={{backgroundColor: v, padding: '4px', borderRadius: '4px',}}>{v}</span>;
+    } else {
+      return v;
+    }
   }
 }

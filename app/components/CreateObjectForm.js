@@ -83,6 +83,14 @@ export default class CreateObjectForm extends React.Component {
           onChange={v => this.handleFieldValueChange(v.target.value, tup[0])}
         />
       );
+    } else if (tup[1] == 'color') {
+      return (
+        <input
+          type="color"
+          value={this.state.value[tup[0]] || ''}
+          onChange={v => this.handleFieldValueChange(v.target.value, tup[0])}
+        />
+      );
     } else if (tup[1].fieldType == 'relation') {
       return (
         <div>
