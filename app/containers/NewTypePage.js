@@ -24,7 +24,10 @@ export default class NewTypePage extends React.Component {
 
         <div class="ui grid">
           <div class="four wide column">
-            <h2>New Type</h2>
+            <h2>
+              <i class="file alternate icon" />
+              New Type
+            </h2>
           </div>
           <div class="twelve wide right aligned column">
             <div class="mini ui icon buttons">
@@ -32,11 +35,12 @@ export default class NewTypePage extends React.Component {
                 class="ui green button"
                 onClick={() =>
                   this.setState({
-                    fields: this.state.fields.concat([['', 'string']]),
+                    fields: this.state.fields.concat([['', 'text']]),
                   })
                 }
               >
                 <i class="plus icon" />
+                New Field
               </button>
             </div>
           </div>
@@ -45,15 +49,15 @@ export default class NewTypePage extends React.Component {
         <table className="ui form table">
           <tbody>
             <tr>
-              <td className="six wide"><b>ID</b></td>
+              <td className="six wide right aligned"><b>ID</b></td>
               <td className="twelve wide">&lt;Assigned&gt;</td>
             </tr>
             <tr>
-              <td><b>Type</b></td>
+              <td className="right aligned"><b>Type</b></td>
               <td>&lt;Type&gt;</td>
             </tr>
             <tr>
-              <td><b>Name</b></td>
+              <td className="right aligned"><b>Name</b></td>
               <td>
                 <input
                   placeholder={`Type Name`}

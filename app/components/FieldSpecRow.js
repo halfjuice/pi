@@ -1,6 +1,7 @@
 import React from 'react';
 import { searchObjects } from '../../models/client';
 import ObjectSearchDropdown from './ObjectSearchDropdown';
+import { Dropdown } from 'semantic-ui-react';
 
 export default class FieldSpecRow extends React.Component {
   constructor(props) {
@@ -22,25 +23,38 @@ export default class FieldSpecRow extends React.Component {
 
   render() {
     let valueSelect = (
-      <select
-        className="ui search dropdown"
-        value={((typeof this.props.value[1]) == 'string')
-          ? this.props.value[1]
-          : this.props.value[1].fieldType
-        }
-        onChange={v => {
-          this.setState({valueType: v.target.value}, this.updateChange.bind(this));
-        }}>
-        <option value="text">Text</option>
-        <option value="relation">Relation</option>
-        <option value="multi_relation">Multi Relation</option>
-      </select>
+      <Dropdown
+        placeholder="Field Type..."
+        value={this.state.valueType}
+        key="value_select"
+        fluid
+        search={options => options}
+        selection
+        options={[
+          {key: "text", value: "text", text: "Text", icon: "font"},
+          {key: "boolean", value: "boolean", text: "Yes / No", icon: "check square outline"},
+          {key: "integer", value: "integer", text: "Integer", icon: "hashtag"},
+          {key: "number", value: "number", text: "Number", icon: "hashtag"},
+          {key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
+          {key: "address", value: "address", text: "Address", icon: "map marker"},
+          {key: "date", value: "date", text: "Date", icon: "calendar outline"},
+          {key: "time", value: "time", text: "Time", icon: "clock outline"},
+          {key: "datetime", value: "datetime", text: "Datetime", icon: "calendar alternate outline"},
+          {key: "color", value: "color", text: "Color", icon: "eye dropper"},
+          {key: "relation", value: "relation", text: "Relation", icon: "exchange"},
+          {key: "multi_relation", value: "multi_relation", text: "Multi Relation", icon: "expand arrow alternate"},
+        ]}
+        onChange={(e, v) => {
+          this.setState({valueType: v.value}, this.updateChange.bind(this));
+        }}
+      />
     );
 
     return (
       <tr>
         <td className="six wide">
           <input
+            className="right aligned"
             placeholder={`Field Name ${this.props.index + 1}`}
             value={this.props.value[0]}
             onChange={v => {
