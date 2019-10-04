@@ -120,10 +120,10 @@ export default class ViewObjectPage extends React.Component {
         {relSec.rels.map((r, i) => {
           var inversed = r.src != this.props.match.params.obj_id;
           var target = inversed ? r.src : r.dst;
-          var targetDOM = <Link to={`/view_object/${target}`}>{relSec.relTargets[i].name} ({target})</Link>;
+          var targetDOM = <Link to={`/view_object/${target}`}>{relSec.relTargets[i].name}</Link>;
           return (
             <p key={`viewObjectLink${i}`}>
-              {inversed ? targetDOM : <i>This</i>} to {inversed ? <i>This</i> : targetDOM}
+              {inversed ? targetDOM : <i>This</i>} <i className="ui icon long arrow alternate right"/> {inversed ? <i>This</i> : targetDOM}
             </p>
           )
         })}

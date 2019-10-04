@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createObject, getObjectByID, searchObjects } from '../../models/client';
 import { tuples2obj, obj2tuples } from '../utils/helper';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
+import { Popup, Button, Modal } from 'semantic-ui-react';
 
 export default class CreateObjectForm extends React.Component {
   constructor(props) {
@@ -55,7 +56,7 @@ export default class CreateObjectForm extends React.Component {
               ? null
               : <div key={`field_${i}`} className="two fields">
                   <div className="field">
-                    {tup[0]}
+                    <b>{tup[0]}</b>
                   </div>
                   <div className="field">
                     {this.renderValueInput(tup)}
@@ -84,16 +85,31 @@ export default class CreateObjectForm extends React.Component {
       );
     } else if (tup[1].fieldType == 'relation') {
       return (
-        <ObjectSearchDropdown
-          placeholder={`${tup[0]} Value (Related Object)`}
-          onChange={v => this.handleFieldValueChange(v, tup[0])}
-          onSearch={txt => searchObjects(tup[1].objectType, txt, 0, 5)}
-          fluid
-        />
+        <div class="ui action input">
+          <ObjectSearchDropdown
+            attached="left"
+            placeholder={`${tup[0]} Value (Related Object)`}
+            onChange={v => this.handleFieldValueChange(v, tup[0])}
+            onSearch={txt => searchObjects(tup[1].objectType, txt, 0, 5)}
+            fluid
+          />
+          <Popup content='Create new object to relate to' trigger={
+            <Button
+              onClick={() => this.setState({[`modalOpenFor${tup[0]}`]: true})}
+              icon='add'
+            />
+          } />
+          <Modal
+            open={this.state['modalOpenFor' + tup[0]] || false}
+            onClose={() => this.setState({[`modalOpenFor${tup[0]}`]: false})}>
+            <Modal.Header>Create object</Modal.Header>
+            <Modal.Content>
+              <CreateObjectForm typeID={tup[1].objectType} />
+            </Modal.Content>
+          </Modal>
+        </div>
       )
     } else if (tup[1].fieldType == 'multi_relation') {
-      // TODO: Fix this!
-      // Put selected tag in options so they don't disappear
       return (
         <ObjectSearchDropdown
           placeholder={`${tup[0]} Value (Related Objects)`}

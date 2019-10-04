@@ -2,10 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { findObjects, searchObjects, createDummyData } from '../../../models/client';
-
-import { Dropdown } from 'semantic-ui-react';
-import ObjectSearchDropdown from '../../components/ObjectSearchDropdown';
+import { findObjects, createDummyData } from '../../../models/client';
 
 export default class HomePage extends React.Component {
   constructor(props) {
@@ -63,30 +60,7 @@ export default class HomePage extends React.Component {
             </div>
           </div>
           <div class="ten wide column">
-            <Dropdown
-              placeholder='State'
-              fluid
-              multiple
-              search
-              selection
-              onSearchChange={(e, v) => {
-                searchObjects(0, e.target.value, 0, 5).then(res => {
-                  this.setState({
-                    options: res.map(e => ({
-                      key: e._id,
-                      value: e._id,
-                      text: e.name,
-                    })),
-                  });
-                });
-              }}
-              options={this.state.options}
-            />
-            <ObjectSearchDropdown
-              fluid
-              multiple
-              onSearch={txt => searchObjects(0, txt, 0, 5)}
-            />
+            <input type="color" />
           </div>
         </div>
       </article>

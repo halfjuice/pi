@@ -14,7 +14,7 @@ export default class ObjectSearchDropdown extends React.Component {
 
   render() {
     var passedProps = {};
-    ['fluid', 'placeholder', 'multiple'].forEach(p => {
+    ['fluid', 'placeholder', 'multiple', 'attached'].forEach(p => {
       passedProps[p] = this.props[p];
     });
 
@@ -24,7 +24,7 @@ export default class ObjectSearchDropdown extends React.Component {
           if (!this.props.onChange) {
             return;
           }
-          let objs = this.findRaw(v.value, this.state.selected);
+          let objs = this.findRaw(this.props.multiple ? [v.value] : v.value, this.state.selected);
           this.setState({selected: objs}, () => {
             this.props.onChange(objs);
           });
@@ -41,9 +41,13 @@ export default class ObjectSearchDropdown extends React.Component {
             });
           });
         }}
-        search
+        search={options => options}
         selection
-        options={this.state.options.concat(this.postProcess(this.state.selected))}
+        options={
+          this.props.multiple
+            ? this.state.options.concat(this.postProcess(this.state.selected))
+            : this.state.options
+          }
         {...passedProps}
       />
     );
