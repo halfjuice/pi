@@ -14,7 +14,18 @@ export default class ObjectSearchDropdown extends React.Component {
 
   render() {
     var passedProps = {};
-    ['fluid', 'placeholder', 'multiple', 'attached'].forEach(p => {
+    [
+      'fluid',
+      'placeholder',
+      'multiple',
+      'className',
+      'class',
+      'style',
+      'item',
+      'simple',
+      'floating',
+      'inline',
+    ].forEach(p => {
       passedProps[p] = this.props[p];
     });
 

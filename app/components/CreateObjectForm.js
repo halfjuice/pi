@@ -85,20 +85,21 @@ export default class CreateObjectForm extends React.Component {
       );
     } else if (tup[1].fieldType == 'relation') {
       return (
-        <div class="ui action input">
+        <div>
           <ObjectSearchDropdown
-            attached="left"
+            fluid
             placeholder={`${tup[0]} Value (Related Object)`}
             onChange={v => this.handleFieldValueChange(v, tup[0])}
             onSearch={txt => searchObjects(tup[1].objectType, txt, 0, 5)}
-            fluid
           />
+
           <Popup content='Create new object to relate to' trigger={
             <Button
               onClick={() => this.setState({[`modalOpenFor${tup[0]}`]: true})}
               icon='add'
             />
           } />
+
           <Modal
             open={this.state['modalOpenFor' + tup[0]] || false}
             onClose={() => this.setState({[`modalOpenFor${tup[0]}`]: false})}>
