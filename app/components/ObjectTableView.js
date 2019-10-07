@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { obj2tuples } from '../utils/helper';
+import { Pagination } from 'semantic-ui-react';
 
 export default class ObjectTableView extends React.Component {
   constructor(props) {
@@ -33,6 +34,21 @@ export default class ObjectTableView extends React.Component {
             </tr>
           ))}
         </tbody>
+
+        <tfoot>
+          <tr>
+            <th colspan={typeTuples.length}>
+              <Pagination
+                floated="right"
+                defaultActivePage={5}
+                onPageChange={(e, {activePage}) => {
+
+                }}
+                totalPages={10}
+              />
+            </th>
+          </tr>
+        </tfoot>
       </table>
     );
   }

@@ -35,6 +35,10 @@ const VIEW_TYPE_SPECS = {
     name: 'Calendar View',
     desc: 'Calendar View present object with datetime property in calendar form.',
   },
+  'map': {
+    name: 'Map View',
+    desc: 'Map View present object in geolocation form.',
+  },
 }
 
 export default class NewViewPage extends React.Component {
