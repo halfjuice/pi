@@ -4,6 +4,7 @@ import { createObject, getObjectByID, searchObjects } from '../../models/client'
 import { tuples2obj, obj2tuples } from '../utils/helper';
 import { Dropdown } from 'semantic-ui-react';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
+import QuerySpecRow from '../components/QuerySpecRow';
 
 const VIEW_TYPE_SPECS = {
   'single': {
@@ -53,7 +54,6 @@ export default class NewViewPage extends React.Component {
 
   render() {
     let viewTypeSpec = this.getViewTypeSpec();
-
     return (
       <div>
         <div class="ui menu">
@@ -61,74 +61,85 @@ export default class NewViewPage extends React.Component {
             Home
           </Link>
         </div>
-        <div class="ui top attached header">New View</div>
-        <div class="ui attached form segment">
-          <div class="two fields">
-            <div class="field">
-              <b>ID</b>
-            </div>
-            <div class="field">&lt;Assigned&gt;</div>
+
+        <div class="ui grid">
+          <div class="sixteen wide column">
+            <h2>
+              <i class="table alternate icon" />
+              New View
+            </h2>
           </div>
-
-          <div class="two fields">
-            <div class="field">
-              <b>Type</b>
-            </div>
-            <div class="field">
-              &lt;View&gt;
-            </div>
+          <div class="twelve wide right aligned column">
           </div>
-
-          <div className="two fields">
-            <div className="field">
-              <b>Name</b>
-            </div>
-            <div className="field">
-              <input
-                placeholder={`View Name`}
-                value={this.state.name}
-                onChange={v => this.setState({name: v.target.value})}
-              />
-            </div>
-          </div>
-
-          <div class="two fields">
-            <div class="field">
-              <b>View Type</b>
-            </div>
-            <div class="field">
-              <Dropdown
-                onChange={(e, v) => this.setState({viewType: v.value})}
-                selection
-                options={obj2tuples(VIEW_TYPE_SPECS).map(t => ({
-                  key: t[0], value: t[0], text: t[1].name,
-                }))}
-              />
-            </div>
-          </div>
-
-          <p>{this.state.viewType && VIEW_TYPE_SPECS[this.state.viewType].desc}</p>
-
-          {viewTypeSpec && viewTypeSpec.specifyType &&
-            <div class="two fields">
-              <div class="field">
-                <b>Object Type</b>
-              </div>
-              <div class="field">
-                <ObjectSearchDropdown
-                  onChange={t => this.setState({objectType: t})}
-                  onSearch={txt => searchObjects(0, txt, 0, 5)}
-                />
-              </div>
-            </div>}
-
-          <button
-            class="ui positive button"
-            onClick={() => this.handleSubmit()}
-          >
-            Create
-          </button>
         </div>
+
+        <table className="ui form table">
+          <tbody>
+            <tr>
+              <td className="six wide right aligned"><b>ID</b></td>
+              <td className="twelve wide">&lt;Assigned&gt;</td>
+            </tr>
+            <tr>
+              <td className="right aligned"><b>Type</b></td>
+              <td>&lt;View&gt;</td>
+            </tr>
+            <tr>
+              <td className="right aligned"><b>Name</b></td>
+              <td>
+                <input
+                  placeholder={`View Name`}
+                  value={this.state.name}
+                  onChange={v => this.setState({name: v.target.value})}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="right aligned"><b>View Type</b></td>
+              <td>
+                <Dropdown
+                  onChange={(e, v) => this.setState({viewType: v.value})}
+                  selection
+                  options={obj2tuples(VIEW_TYPE_SPECS).map(t => ({
+                    key: t[0], value: t[0], text: t[1].name,
+                  }))}
+                />
+                <p>{this.state.viewType && VIEW_TYPE_SPECS[this.state.viewType].desc}</p>
+              </td>
+            </tr>
+            {viewTypeSpec && viewTypeSpec.specifyType &&
+              <tr>
+                <td class="right aligned">
+                  <b>Object Type</b>
+                </td>
+                <td>
+                  <ObjectSearchDropdown
+                    onChange={t => this.setState({objectType: t})}
+                    onSearch={txt => searchObjects(0, txt, 0, 5)}
+                  />
+                </td>
+              </tr>}
+            {viewTypeSpec && viewTypeSpec.specifyQuery && this.state.objectType &&
+              <tr>
+                <td colspan="2">
+                  <QuerySpecRow
+                    type={this.state.objectType}
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="2">
+                <button
+                  class="ui right floated positive button"
+                  onClick={() => this.handleSubmit()}>
+                  Create
+                </button>
+              </th>
+            </tr>
+          </tfoot>
+        </table>
       </div>
     );
   }
