@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getObjectByID, findObjects } from '../../models/client';
+import { getObjectByID, findObjects, findPagedObjects } from '../../models/client';
 import CreateObjectForm from '../components/CreateObjectForm';
 import ObjectTableView from '../components/ObjectTableView';
 
@@ -13,18 +13,33 @@ export default class ViewPage extends React.Component {
       type: null,
 
       data: null,
+
+      pageLimit: 10,
+      totalPage: 1,
+      page: 0,
     };
   }
 
   componentDidMount() {
     getObjectByID(this.props.match.params.view_id).then(v => {
-      this.setState({view: v})
+      this.setState({view: v}, () => {
+        if (v.viewType == 'table') {
+          this.refetchTableView();
+        }
+      });
       getObjectByID(v.objectType).then(ot => this.setState({type: ot}));
-      if (v.viewType == 'table') {
-        var query = v.filter || {};
-        query['type'] = v.objectType;
-        findObjects(query).then(data => this.setState({data: data}));
-      }
+    });
+  }
+
+  refetchTableView() {
+    var query = this.state.view.filter || {};
+    query['type'] = this.state.view.objectType;
+    console.log('refetch', this.state.page);
+    findPagedObjects(query, this.state.pageLimit, this.state.page).then(data => {
+      this.setState({
+        data: data.data,
+        totalPage: Math.ceil(data.total / this.state.pageLimit),
+      });
     });
   }
 
@@ -55,7 +70,13 @@ export default class ViewPage extends React.Component {
         <div>
           <div className="ui top attached header">{v.name}</div>
           <div className="ui attached form segment">
-            <ObjectTableView type={this.state.type} objects={this.state.data} />
+            <ObjectTableView
+              type={this.state.type}
+              objects={this.state.data}
+              totalPage={this.state.totalPage}
+              page={this.state.page}
+              onPageChange={page => this.setState({page: page}, this.refetchTableView.bind(this))}
+            />
           </div>
         </div>
       );

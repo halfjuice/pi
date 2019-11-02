@@ -7,6 +7,10 @@ const Server = {
   getObjectByID: id => db.findOne({ _id: id }),
   findObjectsByIDs: ids => Promise.all(ids.map(id => db.findOne({_id: id}))),
   findObjects: (query, skip, limit) => db.find(query).skip(skip).limit(limit),
+  findPagedObjects: (query, pageLimit, pageNo) => Promise.all([
+    db.find(query).skip(pageNo*pageLimit).limit(pageLimit),
+    db.count(query),
+  ]).then(([objs, cnt]) => ({total: cnt, data: objs})),
   searchObjects: (type, text, skip, limit) => {
     let pat = new RegExp(text);
     if (!isNaN(type)) {
@@ -37,8 +41,20 @@ module.exports = {
       Server.searchObjects(req.query.type, req.query.text, req.query.skip || 0, req.query.limit || 50).then(docs => res.send(docs));
     });
 
+    app.get('/v1/objects/paged', (req, res) => {
+      Server.findPagedObjects(JSON.parse(req.query.query || '{}'), req.query.limit || 0, req.query.page || 50).then(docs => {
+        res.send(docs);
+      });
+    });
+
     app.get('/v1/objects/:id', (req, res) => {
-      Server.getObjectByID(req.params.id).then((r, err) => res.send(r));
+      Server.getObjectByID(req.params.id).then((r, err) => {
+        if (!r) {
+          res.status(404).send(null);
+        } else {
+          res.send(r)
+        }
+      });
 	  });
 
     app.get('/v1/objects', (req, res) => {

@@ -24,6 +24,16 @@ export function findObjects(query, skip, limit) {
   }).then(res => res.data);
 }
 
+export function findPagedObjects(query, pageLimit, pageNo) {
+  return axios.get('/v1/objects/paged', {
+	  params: {
+      query: JSON.stringify(query),
+	    limit: pageLimit,
+	    page: pageNo,
+	  },
+  }).then(res => res.data);
+}
+
 export function searchObjects(type, text, skip, limit) {
   return axios.get('/v1/objects/search', {
     params: {
@@ -71,6 +81,6 @@ export function createDummyData() {
 
 export function createDummyData1() {
   return Promise.all([
-    
+
   ]);
 }

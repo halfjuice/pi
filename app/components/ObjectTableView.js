@@ -40,11 +40,14 @@ export default class ObjectTableView extends React.Component {
             <th colSpan={typeTuples.length}>
               <Pagination
                 floated="right"
-                defaultActivePage={5}
+                defaultActivePage={this.props.page}
                 onPageChange={(e, {activePage}) => {
-
+                    if (activePage >= this.props.totalPage) {
+                      return;
+                    }
+                    this.props.onPageChange && this.props.onPageChange(activePage)
                 }}
-                totalPages={10}
+                totalPages={this.props.totalPage}
               />
             </th>
           </tr>
