@@ -16,13 +16,11 @@ class QueryFieldSpecRow extends React.Component {
   }
 
   render() {
-    console.log(this.state.field, this.props.type, this.state.fieldType);
-
     return (
       <tr>
         <td className="six wide">
           <Dropdown
-            onChange={(e, v) => this.setState({field: v.value, fieldType: this.getFieldTypeOf(v.value)})}
+            onChange={(e, v) => this.setState({field: v.value, fieldType: this.getFieldTypeOf(v.value)}, this.updateChange.bind(this))}
             selection
             fluid
             options={this.props.typeFields.map(t => ({
@@ -54,7 +52,7 @@ class QueryFieldSpecRow extends React.Component {
               <td className="eight wide">
                 <Dropdown
                   key="criteria-dropdown"
-                  onChange={(e, v) => this.setState({criteria: v.value})}
+                  onChange={(e, v) => this.setState({criteria: v.value}, this.updateChange.bind(this))}
                   selection
                   fluid
                   options={[
@@ -68,7 +66,7 @@ class QueryFieldSpecRow extends React.Component {
                   placeholder="Right text value"
                   value={this.state.rightV}
                   onChange={v => {
-                    this.setState({rightV: v.target.value});
+                    this.setState({rightV: v.target.value}, this.updateChange.bind(this));
                   }}
                 />
               </td>
@@ -84,7 +82,7 @@ class QueryFieldSpecRow extends React.Component {
               <td className="eight wide">
                 <Dropdown
                   key="criteria-dropdown"
-                  onChange={(e, v) => this.setState({criteria: v.value})}
+                  onChange={(e, v) => this.setState({criteria: v.value}, this.updateChange.bind(this))}
                   selection
                   fluid
                   options={[
@@ -96,7 +94,7 @@ class QueryFieldSpecRow extends React.Component {
                 <ObjectSearchDropdown
                   placeholder="Search object..."
                   onChange={v => {
-                    this.setState({rightV: v._id});
+                    this.setState({rightV: v._id}, this.updateChange.bind(this));
                   }}
                   onSearch={txt => searchObjects(this.state.fieldType.objectType, txt, 0, 5)}
                   fluid
@@ -108,6 +106,24 @@ class QueryFieldSpecRow extends React.Component {
       );
     } else {
       return "Choose a field";
+    }
+  }
+
+  updateChange() {
+    if (!this.props.onChange) {
+      return;
+    }
+
+    if (this.state.criteria == '$eq') {
+      // $eq logic are shared
+      this.props.onChange(this.state.field, this.state.rightV);
+      return;
+    }
+
+    if (this.state.fieldType == 'text') {
+      //
+    } else if (this.state.fieldType == 'relation') {
+      //
     }
   }
 }
@@ -144,7 +160,7 @@ export default class QuerySpecRow extends React.Component {
               onChange={(f, v) => {
                 var s = this.state.querySpecs;
                 s[i] = [f, v];
-                this.setState({querySpecs: s});
+                this.setState({querySpecs: s}, this.updateChange.bind(this));
               }}
             />
           )}
@@ -154,7 +170,10 @@ export default class QuerySpecRow extends React.Component {
             <th colspan="2">
               <button
                 class="ui right floated button"
-                onClick={() => this.setState({querySpecs: this.state.querySpecs.concat([['', {}]])})}>
+                onClick={() => this.setState(
+                  {querySpecs: this.state.querySpecs.concat([['', {}]])},
+                  this.updateChange.bind(this),
+                )}>
                 Add
               </button>
             </th>
@@ -162,5 +181,14 @@ export default class QuerySpecRow extends React.Component {
         </tfoot>
       </table>
     );
+  }
+
+  updateChange() {
+    if (!this.props.onChange) {
+      return;
+    }
+
+    // TODO: Duplicate check
+    this.props.onChange(tuples2obj(this.state.querySpecs));
   }
 }

@@ -16,7 +16,7 @@ export default class ObjectTableView extends React.Component {
     let typeTuples = obj2tuples(this.props.type);
 
     return (
-      <table class="ui celled table">
+      <table className="ui celled table">
         <thead>
           <tr>
             {typeTuples.map((t, i) => <th key={`hdr_col_${i}`}>{t[0]}</th>)}
@@ -37,7 +37,7 @@ export default class ObjectTableView extends React.Component {
 
         <tfoot>
           <tr>
-            <th colspan={typeTuples.length}>
+            <th colSpan={typeTuples.length}>
               <Pagination
                 floated="right"
                 defaultActivePage={5}

@@ -29,7 +29,7 @@ export default class HomePage extends React.Component {
         </Helmet>
 
         <div className="ui grid">
-          <div class="six wide column">
+          <div className="six wide column">
             <div className="ui vertical menu">
               <div className="item">
                 <div className="header">App</div>
@@ -59,7 +59,7 @@ export default class HomePage extends React.Component {
               </div>
             </div>
           </div>
-          <div class="ten wide column">
+          <div className="ten wide column">
             <input type="color" />
           </div>
         </div>

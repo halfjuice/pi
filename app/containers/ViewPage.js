@@ -21,7 +21,9 @@ export default class ViewPage extends React.Component {
       this.setState({view: v})
       getObjectByID(v.objectType).then(ot => this.setState({type: ot}));
       if (v.viewType == 'table') {
-        findObjects({type: v.objectType}).then(data => this.setState({data: data}));
+        var query = v.filter || {};
+        query['type'] = v.objectType;
+        findObjects(query).then(data => this.setState({data: data}));
       }
     });
   }

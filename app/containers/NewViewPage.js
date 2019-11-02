@@ -49,6 +49,7 @@ export default class NewViewPage extends React.Component {
       name: '',
       viewType: null,
       objectType: null,
+      filter: null,
     };
   }
 
@@ -123,6 +124,7 @@ export default class NewViewPage extends React.Component {
                 <td colspan="2">
                   <QuerySpecRow
                     type={this.state.objectType}
+                    onChange={spec => this.setState({filter: spec})}
                   />
                 </td>
               </tr>
@@ -154,7 +156,9 @@ export default class NewViewPage extends React.Component {
     if (!this.state.viewType) {
       return;
     }
+
     let view = {type: 2, viewType: this.state.viewType, name: this.state.name};
+
     let viewTypeSpec = this.getViewTypeSpec();
     if (viewTypeSpec.specifyType) {
       if (!this.state.objectType) {
@@ -162,6 +166,11 @@ export default class NewViewPage extends React.Component {
       }
       view.objectType = this.state.objectType._id;
     }
+
+    if (this.state.filter) {
+      view['filter'] = this.state.filter;
+    }
+
  	  createObject(view).then((res, err) => {
 	    alert(JSON.stringify(res));
 	  });
