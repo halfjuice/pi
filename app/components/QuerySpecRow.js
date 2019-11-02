@@ -4,7 +4,7 @@ import { tuples2obj, obj2tuples } from '../utils/helper';
 import { Dropdown } from 'semantic-ui-react';
 import ObjectSearchDropdown from './ObjectSearchDropdown';
 
-class QueryFieldSpecRow extends React.Component {
+class QueryNewTypeFieldRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -154,7 +154,7 @@ export default class QuerySpecRow extends React.Component {
         </thead>
         <tbody>
           {this.state.querySpecs.map((spec, i) =>
-            <QueryFieldSpecRow
+            <QueryNewTypeFieldRow
               type={this.props.type}
               typeFields={obj2tuples(this.props.type).filter(x => ['_id', 'type'].indexOf(x[0]) == -1)}
               onChange={(f, v) => {

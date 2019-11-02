@@ -5,7 +5,7 @@ import { tuples2obj, obj2tuples } from '../utils/helper';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 import { Popup, Button, Modal } from 'semantic-ui-react';
 
-export default class CreateObjectForm extends React.Component {
+export default class NewObjectForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -113,7 +113,7 @@ export default class CreateObjectForm extends React.Component {
             onClose={() => this.setState({[`modalOpenFor${tup[0]}`]: false})}>
             <Modal.Header>Create object</Modal.Header>
             <Modal.Content>
-              <CreateObjectForm typeID={tup[1].objectType} />
+              <NewObjectForm typeID={tup[1].objectType} />
             </Modal.Content>
           </Modal>
         </div>

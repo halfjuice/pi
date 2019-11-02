@@ -3,7 +3,7 @@ import { searchObjects } from '../../models/client';
 import ObjectSearchDropdown from './ObjectSearchDropdown';
 import { Dropdown } from 'semantic-ui-react';
 
-export default class FieldSpecRow extends React.Component {
+export default class NewTypeFieldRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = this.getStateFromProps(props);

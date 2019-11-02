@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createObject } from '../../models/client';
 import { tuples2obj } from '../utils/helper';
-import FieldSpecRow from '../components/FieldSpecRow';
+import NewTypeFieldRow from '../components/NewTypeFieldRow';
 
 export default class NewTypePage extends React.Component {
   constructor(props) {
@@ -67,7 +67,7 @@ export default class NewTypePage extends React.Component {
               </td>
             </tr>
             {this.state.fields.map((tup, i) => (
-              <FieldSpecRow
+              <NewTypeFieldRow
                 key={`field_spce_${i}`}
                 index={i}
                 value={tup}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getObjectByID, findObjects, findPagedObjects } from '../../models/client';
-import CreateObjectForm from '../components/CreateObjectForm';
+import NewObjectForm from '../components/NewObjectForm';
 import ObjectTableView from '../components/ObjectTableView';
 
 export default class ViewPage extends React.Component {
@@ -62,7 +62,7 @@ export default class ViewPage extends React.Component {
     }
 
     if (v.viewType == 'create') {
-      return <CreateObjectForm typeID={v.objectType} />;
+      return <NewObjectForm typeID={v.objectType} />;
     }
 
     if (v.viewType == 'table') {
