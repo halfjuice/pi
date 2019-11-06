@@ -42,7 +42,7 @@ export default class NewTypeFieldRow extends React.Component {
           {key: "datetime", value: "datetime", text: "Datetime", icon: "calendar alternate outline"},
           {key: "color", value: "color", text: "Color", icon: "eye dropper"},
           {key: "relation", value: "relation", text: "Relation", icon: "exchange"},
-          {key: "multi_relation", value: "multi_relation", text: "Multi Relation", icon: "expand arrow alternate"},
+          {key: "multi_relation", value: "multi_relation", text: "Multi Relation", icon: "expand arrows alternate"},
         ]}
         onChange={(e, v) => {
           this.setState({valueType: v.value}, this.updateChange.bind(this));

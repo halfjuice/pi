@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { createObject, getObjectByID, searchObjects } from '../../models/client';
 import { tuples2obj, obj2tuples } from '../utils/helper';
@@ -81,6 +82,17 @@ export default class NewObjectForm extends React.Component {
           placeholder={`${tup[0]} Value`}
           value={this.state.value[tup[0]] || ''}
           onChange={v => this.handleFieldValueChange(v.target.value, tup[0])}
+        />
+      );
+    } else if (tup[1] == 'datetime') {
+      console.log(this.state.value[tup[0]]);
+      console.log(new Date(this.state.value[tup[0]]));
+      return (
+        <input
+          type="datetime-local"
+          placeholder={`${tup[0]} Value`}
+          value={moment(this.state.value[tup[0]]).format('YYYY-MM-DDTHH:mm') || 0}
+          onChange={v => this.handleFieldValueChange(new Date(v.target.value).getTime(), tup[0])}
         />
       );
     } else if (tup[1] == 'color') {

@@ -81,7 +81,7 @@ export default class NewTypePage extends React.Component {
           </tbody>
           <tfoot>
             <tr>
-              <th colspan="2">
+              <th colSpan="2">
                 <button
                   class="ui right floated positive button"
                   onClick={() => this.handleSubmit()}>

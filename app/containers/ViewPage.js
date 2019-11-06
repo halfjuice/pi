@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { getObjectByID, findObjects, findPagedObjects } from '../../models/client';
 import NewObjectForm from '../components/NewObjectForm';
 import ObjectTableView from '../components/ObjectTableView';
+import moment from 'moment';
+
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
 
 export default class ViewPage extends React.Component {
   constructor(props) {
@@ -14,9 +18,13 @@ export default class ViewPage extends React.Component {
 
       data: null,
 
+      // Table View
       pageLimit: 10,
       totalPage: 1,
       page: 0,
+
+      // Calendar View
+      currentDate: new Date(),
     };
   }
 
@@ -25,6 +33,8 @@ export default class ViewPage extends React.Component {
       this.setState({view: v}, () => {
         if (v.viewType == 'table') {
           this.refetchTableView();
+        } else if (v.viewType == 'calendar') {
+          this.refetchCalendarView();
         }
       });
       getObjectByID(v.objectType).then(ot => this.setState({type: ot}));
@@ -34,12 +44,24 @@ export default class ViewPage extends React.Component {
   refetchTableView() {
     var query = this.state.view.filter || {};
     query['type'] = this.state.view.objectType;
-    console.log('refetch', this.state.page);
     findPagedObjects(query, this.state.pageLimit, this.state.page).then(data => {
       this.setState({
         data: data.data,
         totalPage: Math.ceil(data.total / this.state.pageLimit),
       });
+    });
+  }
+
+  refetchCalendarView() {
+    var index = this.state.view.index;
+    findObjects({type: this.state.view.objectType,
+      [index]: {
+      $gt: moment(this.state.currentDate).subtract(1, 'month').startOf('month').toDate().getTime(),
+      $lt: moment(this.state.currentDate).add(1, 'month').endOf('month').toDate().getTime(),
+    }}).then(data => {
+      this.setState({
+        data: data,
+      })
     });
   }
 
@@ -55,6 +77,8 @@ export default class ViewPage extends React.Component {
       </div>
     );
   }
+
+  calendarRef = React.createRef()
 
   renderView(v) {
     if (!v) {
@@ -76,6 +100,48 @@ export default class ViewPage extends React.Component {
               totalPage={this.state.totalPage}
               page={this.state.page}
               onPageChange={page => this.setState({page: page}, this.refetchTableView.bind(this))}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (v.viewType == 'calendar') {
+      var api = this.calendarRef.current && this.calendarRef.current.getApi();
+      return (
+        <div>
+          <div>
+            {moment(this.state.currentDate).format('MMMM YYYY')}
+            <div className="right aligned">
+              <button
+                class="ui button primary"
+                onClick={() => {
+                  api && api.prev();
+                  this.setState({currentDate: api.getDate()}, this.refetchCalendarView.bind(this));
+                }}>
+                &lt;
+              </button>
+              <button
+                class="ui button primary"
+                onClick={() => {
+                  api && api.next();
+                  this.setState({currentDate: api.getDate()}, this.refetchCalendarView.bind(this));
+                }}>
+                &gt;
+              </button>
+            </div>
+          </div>
+          <div>
+            <FullCalendar
+              header={'', '', ''}
+              ref={this.calendarRef}
+              defaultView="dayGridMonth"
+              defaultDate={new Date()}
+              plugins={[ dayGridPlugin ]}
+              events={(this.state.data || []).map(o => ({
+                title: o.name,
+                date: moment(o[this.state.view.index]).format('YYYY-MM-DDTHH:mm:ss'),
+              }))}
             />
           </div>
         </div>
