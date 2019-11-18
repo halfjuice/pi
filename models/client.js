@@ -8,6 +8,10 @@ export function getObjectByID(id) {
   return axios.get(`/v1/objects/${id}`).then(res => res.data);
 }
 
+export function updateObject(id, newValue) {
+  return axios.post(`/v1/objects/${id}`, newValue).then(res => res.data);
+}
+
 export function findObjectsByIDs(ids) {
   return axios.get(`/v1/objects/multiID`, {
     params: {ids: JSON.stringify(ids)}

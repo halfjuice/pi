@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createObject, getObjectByID, findObjectsByIDs, findObjects, searchObjects } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
+import NewObjectForm from '../components/NewObjectForm';
 
 export default class ViewObjectPage extends React.Component {
   constructor(props) {
@@ -10,6 +11,7 @@ export default class ViewObjectPage extends React.Component {
     this.state = {
       loading: true,
       obj: null,
+      type: null,
       related: {},
       relSections: [],
       secRelTypeOptions: [],
@@ -25,7 +27,7 @@ export default class ViewObjectPage extends React.Component {
       });
       getObjectByID(res['type']).then(typ => {
         this.state.related.type = typ
-        this.setState({related: this.state.related});
+        this.setState({type: typ, related: this.state.related});
       });
       findObjects({_isRelation: 1, $or: [
         {src: obj_id},
@@ -64,27 +66,6 @@ export default class ViewObjectPage extends React.Component {
   }
 
   render() {
-    var content = null;
-    if (this.state.obj) {
-      content = (
-        <table className="ui celled table">
-          <tbody>
-            {obj2tuples(this.state.obj).map((tup, i) => {
-              var val = <td>{tup[1]}</td>;
-              if (tup[0] == 'type' && this.state.related.type) {
-                val = <td><Link to={'/view_type/' + tup[1]}>{this.state.related.type.name}</Link></td>;
-              }
-              return (
-                <tr key={`obj_kv_row_${i}`}>
-                  <td><b>{tup[0]}</b></td>
-                  {val}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      );
-    }
 
     return (
       <div>
@@ -93,11 +74,32 @@ export default class ViewObjectPage extends React.Component {
             Home
           </Link>
         </div>
-        <div className="ui top attached header">Object Info</div>
-        <div className="ui attached form segment">
-          <p>{this.state.obj && this.state.obj.name}</p>
-          {content}
+
+        <div class="ui grid">
+          <div class="four wide column">
+            <h2>
+              <i class="file alternate icon" />
+              View Object
+            </h2>
+          </div>
+          <div class="twelve wide right aligned column">
+            <div class="mini ui icon buttons">
+              <button
+                class="ui button"
+                onClick={() =>
+                  this.setState({
+                    updating: !this.state.updating,
+                  })
+                }
+              >
+                <i class="edit icon" />
+                Update
+              </button>
+            </div>
+          </div>
         </div>
+
+        {this.state.obj && <NewObjectForm typeId={this.state.obj.type} object={this.state.obj} />}
 
         <br />
         <ObjectSearchDropdown

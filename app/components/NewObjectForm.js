@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { createObject, getObjectByID, searchObjects } from '../../models/client';
+import { createObject, getObjectByID, searchObjects, updateObject } from '../../models/client';
 import { tuples2obj, obj2tuples } from '../utils/helper';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 import { Popup, Button, Modal } from 'semantic-ui-react';
@@ -11,7 +11,7 @@ export default class NewObjectForm extends React.Component {
     super(props);
     this.state = {
       type: null,
-      value: {type: props.typeID, name: ''},
+      value: props.object ? props.object : {type: props.typeID, name: ''},
     };
   }
 
@@ -21,57 +21,64 @@ export default class NewObjectForm extends React.Component {
 
   render() {
     return (
-      <div>
-        <div className="ui top attached header">New Object</div>
-        <div className="ui attached form segment">
-          <div className="two fields">
-            <div className="field">
+      <table className="ui form table">
+        <tbody>
+          <tr>
+            <td className="six wide right aligned">
               <b>ID</b>
-            </div>
-            <div className="field">&lt;Assigned&gt;</div>
-          </div>
+            </td>
+            <td className="twelve wide">
+              {this.props.object ? this.props.object._id : '<Assigned>'}
+            </td>
+          </tr>
           {this.state.type
-            ? <div className="two fields">
-                <div className="field">
+            ? <tr>
+                <td className="six wide right aligned">
                   <b>Type</b>
-                </div>
-                <div className="field">
+                </td>
+                <td className="twelve wide">
                   <Link to={'/view_type/' + this.state.type['_id']}>{this.state.type['name']}</Link>
-                </div>
-              </div>
+                </td>
+              </tr>
             : null}
-          <div className="two fields">
-            <div className="field">
+          <tr>
+            <td className="six wide right aligned">
               <b>Name</b>
-            </div>
-            <div className="field">
+            </td>
+            <td className="twelve wide">
               <input
                 placeholder="Object Name"
                 value={this.state.value.name}
                 onChange={v => this.handleFieldValueChange(v.target.value, 'name')}
               />
-            </div>
-          </div>
+            </td>
+          </tr>
           {obj2tuples(this.state.type).map((tup, i) =>
             tup[0] == '_id' || tup[0] == 'type' || tup[0] == 'name'
               ? null
-              : <div key={`field_${i}`} className="two fields">
-                  <div className="field">
+              : <tr key={`field_${i}`}>
+                  <td className="six wide right aligned">
                     <b>{tup[0]}</b>
-                  </div>
-                  <div className="field">
+                  </td>
+                  <td className="twelve wide">
                     {this.renderValueInput(tup)}
-                  </div>
-                </div>
+                  </td>
+                </tr>
           )}
-          <button
-            className="ui positive button"
-            onClick={() => this.handleSubmit()}
-          >
-            Create
-          </button>
-        </div>
-      </div>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colSpan="2">
+              <button
+                className="ui right floated positive button"
+                onClick={() => this.handleSubmit()}
+              >
+                {this.props.object ? 'Update' : 'Create'}
+              </button>
+            </th>
+          </tr>
+        </tfoot>
+      </table>
     );
   }
 
@@ -152,9 +159,15 @@ export default class NewObjectForm extends React.Component {
   }
 
   handleSubmit() {
- 	  createObject(this.state.value).then((res, err) => {
-	    alert(JSON.stringify(res));
-      this.setState({value: {type: this.props.typeID}});
-	  });
+    if (this.props.object) {
+      updateObject(this.props.object._id, this.state.value).then((res, err) => {
+        alert(JSON.stringify(res));
+      });
+    } else {
+   	  createObject(this.state.value).then((res, err) => {
+  	    alert(JSON.stringify(res));
+        this.setState({value: {type: this.props.typeID}});
+  	  });
+    }
   }
 }

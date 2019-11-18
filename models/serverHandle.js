@@ -39,7 +39,7 @@ ServerHandle = {
   },
 
   updateObject: (id, newValue) => {
-    getObjectByID(id).then(obj => {
+    return ServerHandle.getObjectByID(id).then(obj => {
       if (obj.type == PrimType.Type || obj.type == PrimType.History) {
         throw Error.UpdateDirectlyNotSupported;
       }
@@ -50,8 +50,8 @@ ServerHandle = {
       }
 
       // TODO: Check for legal object
-      return db.update({_id: id}, newValue).then(() => {
-        db.insert({
+      return db().update({_id: id}, {$set: newValue}).then(() => {
+        db().insert({
           type: PrimType.History,
           historyType: HistoryType.Update,
           target: id,

@@ -14,6 +14,7 @@ const Server = {
     db().find(query).skip(pageNo*pageLimit).limit(pageLimit),
     db().count(query),
   ]).then(([objs, cnt]) => ({total: cnt, data: objs})),
+  updateObject: (id, newValue) => h.updateObject(id, newValue),
   updateObjectWithDiff: (id, diffs) => {
     // TODO:
   },
@@ -65,6 +66,12 @@ module.exports = {
 
     app.get('/v1/objects', (req, res) => {
       Server.findObjects(JSON.parse(req.query.query || '{}'), req.query.skip || 0, req.query.limit || 50).then(docs => res.send(docs));
+    });
+
+    app.post('/v1/objects/:id', (req, res) => {
+      Server.updateObject(req.params.id, req.body).then((r, err) => {
+        res.send(r);
+      });
     });
 
 	  app.put('/v1/objects/', (req, res) => {

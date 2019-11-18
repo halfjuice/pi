@@ -17,6 +17,19 @@ export default class NewObjectPage extends React.Component {
             Home
           </Link>
         </div>
+
+        <div class="ui grid">
+          <div class="four wide column">
+            <h2>
+              <i class="plus square outline icon" />
+              New Object
+            </h2>
+          </div>
+          <div class="twelve wide right aligned column">
+
+          </div>
+        </div>
+
         <NewObjectForm typeID={this.props.match.params.type_id} />
       </div>
     );
