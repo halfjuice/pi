@@ -1,22 +1,28 @@
 const nedb = require('nedb-promises');
 
-const db = nedb.create('./temp/data.nedb');
+// TODO: Ability to switch DB
+// TODO: Enter test mode will use test db, which can be re-written easily
+const h = require('./serverHandle');
+const db = h.db;
 
 const Server = {
-  createObject: fields => db.insert(fields),
-  getObjectByID: id => db.findOne({ _id: id }),
-  findObjectsByIDs: ids => Promise.all(ids.map(id => db.findOne({_id: id}))),
-  findObjects: (query, skip, limit) => db.find(query).skip(skip).limit(limit),
+  createObject: fields => db().insert(fields),
+  getObjectByID: id => db().findOne({ _id: id }),
+  findObjectsByIDs: ids => Promise.all(ids.map(id => db().findOne({_id: id}))),
+  findObjects: (query, skip, limit) => db().find(query).skip(skip).limit(limit),
   findPagedObjects: (query, pageLimit, pageNo) => Promise.all([
-    db.find(query).skip(pageNo*pageLimit).limit(pageLimit),
-    db.count(query),
+    db().find(query).skip(pageNo*pageLimit).limit(pageLimit),
+    db().count(query),
   ]).then(([objs, cnt]) => ({total: cnt, data: objs})),
+  updateObjectWithDiff: (id, diffs) => {
+    // TODO:
+  },
   searchObjects: (type, text, skip, limit) => {
     let pat = new RegExp(text);
     if (!isNaN(type)) {
       type = parseInt(type);
     }
-    return db.find({
+    return db().find({
       type: type,
       $or: [
         {_id: {$regex: pat}},
