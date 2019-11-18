@@ -84,17 +84,6 @@ export default class ViewObjectPage extends React.Component {
           </div>
           <div class="twelve wide right aligned column">
             <div class="mini ui icon buttons">
-              <button
-                class="ui button"
-                onClick={() =>
-                  this.setState({
-                    updating: !this.state.updating,
-                  })
-                }
-              >
-                <i class="edit icon" />
-                Update
-              </button>
             </div>
           </div>
         </div>
