@@ -37,13 +37,13 @@ export default class HomePage extends React.Component {
                   {this.state.views.map((v, i) => {
                     return <Link className="item" to={`/view/${v._id}`} key={`view_button_${i}`}>{v.name}</Link>;
                   })}
-                  <Link className="item" to="new_view">New View</Link>
                 </div>
               </div>
 
               <div className="item">
                 <div className="header">Admin</div>
                 <div className="menu">
+                  <Link className="item" to="new_view">New View</Link>
                   <Link className="item" to="new_type">New Type</Link>
                   <Link className="item" to="new_rel_type">New Relationship Type</Link>
                   <Link className="item" to="all_types">All Types</Link>
@@ -60,7 +60,7 @@ export default class HomePage extends React.Component {
             </div>
           </div>
           <div className="ten wide column">
-            <input type="color" />
+            
           </div>
         </div>
       </article>

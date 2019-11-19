@@ -9,7 +9,7 @@ import QuerySpecRow from '../components/QuerySpecRow';
 const VIEW_TYPE_SPECS = {
   'single': {
     name: 'Single View',
-    desc: 'Single View presents single object data based on query',
+    desc: 'Single View presents single object data based on query. (TBD)',
     specifyType: true,
     specifyQuery: true,
     icon: 'cube',
@@ -30,13 +30,13 @@ const VIEW_TYPE_SPECS = {
   // TODO
   'multi': {
     name: 'Multi View',
-    desc: 'Multi View allows you to combine multiple views together.',
+    desc: 'Multi View allows you to combine multiple views together. (TBD)',
     icon: 'copy outline',
   },
   // TODO
   'tree': {
     name: 'Tree View',
-    desc: 'Tree View present related object in a tree structured starting from a root object.',
+    desc: 'Tree View present related object in a tree structured starting from a root object. (TBD)',
     icon: 'indent',
   },
   'calendar': {
@@ -49,7 +49,7 @@ const VIEW_TYPE_SPECS = {
   // TODO
   'map': {
     name: 'Map View',
-    desc: 'Map View present object in geolocation form.',
+    desc: 'Map View present object in geolocation form. (TBD)',
     icon: 'map outline',
   },
 }
@@ -82,8 +82,6 @@ export default class NewViewPage extends React.Component {
               <i class="table alternate icon" />
               New View
             </h2>
-          </div>
-          <div class="twelve wide right aligned column">
           </div>
         </div>
 

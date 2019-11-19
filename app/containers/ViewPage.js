@@ -86,7 +86,19 @@ export default class ViewPage extends React.Component {
     }
 
     if (v.viewType == 'create') {
-      return <NewObjectForm typeID={v.objectType} />;
+      return (
+        <div>
+          <div class="ui grid">
+            <div class="four wide column">
+              <h2>
+                <i class="file alternate icon" />
+                New Type
+              </h2>
+            </div>
+          </div>
+          <NewObjectForm typeID={v.objectType} />
+        </div>
+      );
     }
 
     if (v.viewType == 'table') {
