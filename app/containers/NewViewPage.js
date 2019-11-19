@@ -7,13 +7,13 @@ import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 import QuerySpecRow from '../components/QuerySpecRow';
 
 const VIEW_TYPE_SPECS = {
-  'single': {
+  /*'single': {
     name: 'Single View',
     desc: 'Single View presents single object data based on query. (TBD)',
     specifyType: true,
     specifyQuery: true,
     icon: 'cube',
-  },
+  },*/
   'table': {
     name: 'Table View',
     desc: 'Table View presents data in the form of table.',
@@ -28,17 +28,17 @@ const VIEW_TYPE_SPECS = {
     icon: 'plus square outline',
   },
   // TODO
-  'multi': {
+  /*'multi': {
     name: 'Multi View',
     desc: 'Multi View allows you to combine multiple views together. (TBD)',
     icon: 'copy outline',
-  },
+  },*/
   // TODO
-  'tree': {
+  /*'tree': {
     name: 'Tree View',
     desc: 'Tree View present related object in a tree structured starting from a root object. (TBD)',
     icon: 'indent',
-  },
+  },*/
   'calendar': {
     name: 'Calendar View',
     desc: 'Calendar View present object with datetime property in calendar form.',
@@ -47,11 +47,11 @@ const VIEW_TYPE_SPECS = {
     icon: 'calendar alternate outline',
   },
   // TODO
-  'map': {
+  /*'map': {
     name: 'Map View',
     desc: 'Map View present object in geolocation form. (TBD)',
     icon: 'map outline',
-  },
+  },*/
 }
 
 export default class NewViewPage extends React.Component {

@@ -1,6 +1,6 @@
 
 
-export function tuples2obj(arr) {
+function tuples2obj(arr) {
   if (!arr) {
     return {};
   }
@@ -12,7 +12,7 @@ export function tuples2obj(arr) {
   return obj;
 }
 
-export function obj2tuples(obj) {
+function obj2tuples(obj) {
   if (!obj) {
     return [];
   }
@@ -21,4 +21,14 @@ export function obj2tuples(obj) {
     tuples.push([k, obj[k]]);
   }
   return tuples;
+}
+
+function mergeDict(a, b) {
+  return tuples2obj(obj2tuples(a).concat(obj2tuples(b)));
+}
+
+module.exports = {
+  tuples2obj: tuples2obj,
+  obj2tuples: obj2tuples,
+  mergeDict: mergeDict,
 }

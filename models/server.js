@@ -15,9 +15,7 @@ const Server = {
     db().count(query),
   ]).then(([objs, cnt]) => ({total: cnt, data: objs})),
   updateObject: (id, newValue) => h.updateObject(id, newValue),
-  updateObjectWithDiff: (id, diffs) => {
-    // TODO:
-  },
+  updateTypeWithChanges: (id, adds, removes, updates) => h.updateTypeWithChanges(id, adds, removes, updates),
   searchObjects: (type, text, skip, limit) => {
     let pat = new RegExp(text);
     if (!isNaN(type)) {
@@ -71,6 +69,12 @@ module.exports = {
     app.post('/v1/objects/:id', (req, res) => {
       Server.updateObject(req.params.id, req.body).then((r, err) => {
         res.send(r);
+      });
+    });
+
+    app.post('/v1/types/:id/changes', (req, res) => {
+      Server.updateTypeWithChanges(req.params.id, req.body.adds, req.body.removes, req.body.updates).then((r, err) => {
+        res.send({count: r});
       });
     });
 

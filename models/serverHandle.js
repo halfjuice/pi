@@ -1,4 +1,5 @@
 const nedb = require('nedb-promises');
+const { mergeDict, tuples2obj } = require('../app/utils/helper');
 
 PrimType = {
   Type: 0,
@@ -34,8 +35,13 @@ ServerHandle = {
 
   getObjectByID: (id) => db().findOne({_id: id}),
 
-  updateObjectWithDiff: (id, diffs) => {
-
+  updateTypeWithChanges: (id, adds, removes, updates) => {
+    removes = tuples2obj(removes.map(e => [e, true]));
+    return db().update({_id: id}, {$set: mergeDict(adds, updates), $unset: removes}).then(() => {
+      // Only removes and updates needs to be updated
+      // BULK OPERATION!
+      return db().update({type: id}, {$unset: mergeDict(removes, updates)});
+    });
   },
 
   updateObject: (id, newValue) => {

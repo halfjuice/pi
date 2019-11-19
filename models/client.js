@@ -12,6 +12,10 @@ export function updateObject(id, newValue) {
   return axios.post(`/v1/objects/${id}`, newValue).then(res => res.data);
 }
 
+export function updateTypeWithChanges(id, adds, removes, updates) {
+  return axios.post(`/v1/types/${id}/changes`, {adds, removes, updates}).then(res => res.data);
+}
+
 export function findObjectsByIDs(ids) {
   return axios.get(`/v1/objects/multiID`, {
     params: {ids: JSON.stringify(ids)}

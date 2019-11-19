@@ -1,11 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { getObjectByID } from '../../models/client';
 import NewTypeForm from '../components/NewTypeForm';
 
-export default class NewTypePage extends React.Component {
+export default class UpdateTypePage extends React.Component {
   constructor(props) {
     super(props);
     this.formRef = React.createRef();
+    this.state = {type: null};
+  }
+
+  componentDidMount() {
+    getObjectByID(this.props.match.params.type_id).then(res => this.setState({
+      type: res,
+    }))
   }
 
   render() {
@@ -21,7 +29,7 @@ export default class NewTypePage extends React.Component {
           <div class="four wide column">
             <h2>
               <i class="file alternate icon" />
-              New Type
+              Update Type
             </h2>
           </div>
           <div class="twelve wide right aligned column">
@@ -37,7 +45,9 @@ export default class NewTypePage extends React.Component {
           </div>
         </div>
 
-      <NewTypeForm ref={this.formRef} />
+      {this.state.type &&
+        <NewTypeForm ref={this.formRef} type={this.state.type} />
+      }
 
       </div>
     );

@@ -32,13 +32,13 @@ export default class NewTypeFieldRow extends React.Component {
         selection
         options={[
           {key: "text", value: "text", text: "Text", icon: "font"},
-          {key: "boolean", value: "boolean", text: "Yes / No", icon: "check square outline"},
-          {key: "integer", value: "integer", text: "Integer", icon: "hashtag"},
-          {key: "number", value: "number", text: "Number", icon: "hashtag"},
-          {key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
-          {key: "address", value: "address", text: "Address", icon: "map marker"},
-          {key: "date", value: "date", text: "Date", icon: "calendar outline"},
-          {key: "time", value: "time", text: "Time", icon: "clock outline"},
+          //{key: "boolean", value: "boolean", text: "Yes / No", icon: "check square outline"},
+          //{key: "integer", value: "integer", text: "Integer", icon: "hashtag"},
+          //{key: "number", value: "number", text: "Number", icon: "hashtag"},
+          //{key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
+          //{key: "address", value: "address", text: "Address", icon: "map marker"},
+          //{key: "date", value: "date", text: "Date", icon: "calendar outline"},
+          //{key: "time", value: "time", text: "Time", icon: "clock outline"},
           {key: "datetime", value: "datetime", text: "Datetime", icon: "calendar alternate outline"},
           {key: "color", value: "color", text: "Color", icon: "eye dropper"},
           {key: "relation", value: "relation", text: "Relation", icon: "exchange"},
@@ -52,17 +52,21 @@ export default class NewTypeFieldRow extends React.Component {
 
     return (
       <tr>
-        <td className="six wide">
-          <input
-            className="right aligned"
-            placeholder={`Field Name ${this.props.index + 1}`}
-            value={this.props.value[0]}
-            onChange={v => {
-              this.setState({keyName: v.target.value}, this.updateChange.bind(this));
-            }}
-          />
+        <td className={this.props.fixedKey ? 'six wide right aligned' : 'six wide'}>
+          {this.props.fixedKey
+            ? <b>{this.props.value[0]}</b>
+            :
+              <input
+                className="right aligned"
+                placeholder={`Field Name ${this.props.index + 1}`}
+                value={this.props.value[0]}
+                onChange={v => {
+                  this.setState({keyName: v.target.value}, this.updateChange.bind(this));
+                }}
+              />
+          }
         </td>
-        <td className="twelve wide">
+        <td className="nine wide">
           {typeof this.props.value[1] != 'string'
             ? <div className="ui grid">
                 <div className="eight wide column">
@@ -81,6 +85,11 @@ export default class NewTypeFieldRow extends React.Component {
               </div>
             : valueSelect
           }
+        </td>
+        <td className="one wide">
+          <button class="ui negative icon basic button" onClick={() => this.props.onRemoveClick && this.props.onRemoveClick()}>
+            <i class="delete icon"></i>
+          </button>
         </td>
       </tr>
     );

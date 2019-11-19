@@ -44,6 +44,12 @@ export default class ViewTypePage extends React.Component {
                 >
                   Create Object
                 </Link>
+                <Link
+                  class="mini ui button"
+                  to={'/update_type/' + this.props.match.params.type_id}
+                >
+                  Update Type
+                </Link>
               </div>
             </div>
           </div>
