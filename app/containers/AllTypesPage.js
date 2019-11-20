@@ -39,7 +39,6 @@ export default class AllTypesPage extends React.Component {
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Description</th>
               <th>Object Action</th>
               <th>Type Action</th>
             </tr>
@@ -54,7 +53,6 @@ export default class AllTypesPage extends React.Component {
                     {t['name']}
                   </Link>
                 </td>
-                <td>{t['description']}</td>
                 <td>
                   <div class="mini ui basic buttons">
                     <Link

@@ -90,17 +90,21 @@ export default class ViewObjectPage extends React.Component {
 
         {this.state.obj && <NewObjectForm typeId={this.state.obj.type} object={this.state.obj} />}
 
-        <br />
-        <ObjectSearchDropdown
-          placeholder="Search Relation Type to Add Section"
-          onChange={v => this.handleAddSection(v)}
-          onSearch={txt => searchObjects(1, txt, 0, 5)}
-          fluid
-        />
-
-        {this.state.relSections != null && this.state.relSections.map(this.renderRelationSection.bind(this))}
       </div>
     );
+  }
+
+  renderRelationPart() {
+    return [
+      <br />,
+      <ObjectSearchDropdown
+        placeholder="Search Relation Type to Add Section"
+        onChange={v => this.handleAddSection(v)}
+        onSearch={txt => searchObjects(1, txt, 0, 5)}
+        fluid
+      />,
+      this.state.relSections != null && this.state.relSections.map(this.renderRelationSection.bind(this)),
+    ];
   }
 
   renderRelationSection(relSec, idx) {
