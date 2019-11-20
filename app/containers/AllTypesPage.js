@@ -24,21 +24,71 @@ export default class AllTypesPage extends React.Component {
             Home
           </Link>
         </div>
-        <div className="ui top attached header">All Types</div>
-        <div className="ui attached form segment">
-          <div className="ui items">
-            {this.state.types.map((t, i) =>
-              <div key={`type_item_${i}`} className="item">
-                <div className="content">
-                  <Link className="header" to={'/view_type/'+t['_id']}>{t['name']}</Link>
-                  <div className="description">
-                    <p>Description for object</p>
-                  </div>
-                </div>
-              </div>
-            )}
+
+        <div class="ui grid">
+          <div class="sixteen wide column">
+            <h2>
+              <i class="cubes icon" />
+              All Types
+            </h2>
           </div>
         </div>
+
+        <table className="ui celled table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Object Action</th>
+              <th>Type Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {this.state.types.map((t, i) =>
+              <tr>
+                <td>{t['_id']}</td>
+                <td>
+                  <Link className="header" to={`/view_type/${t['_id']}`}>
+                    {t['name']}
+                  </Link>
+                </td>
+                <td>{t['description']}</td>
+                <td>
+                  <div class="mini ui basic buttons">
+                    <Link
+                      class="mini ui button"
+                      to={'/all_objects/' + t['_id']}
+                    >
+                      <i className="eye icon" />
+                      View
+                    </Link>
+                    <Link
+                      class="mini ui button"
+                      to={'/new_object/' + t['_id']}
+                    >
+                      <i className="plus square outline icon" />
+                      Create
+                    </Link>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="mini ui basic buttons">
+                    <Link
+                      class="mini ui button"
+                      to={'/update_type/' + t['_id']}
+                    >
+                      <i className="edit icon" />
+                      Update
+                    </Link>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     );
   }

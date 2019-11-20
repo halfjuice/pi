@@ -27,7 +27,7 @@ export default class NewTypePage extends React.Component {
           <div class="twelve wide right aligned column">
             <div class="mini ui icon buttons">
               <button
-                class="ui green button"
+                class="ui blue basic button"
                 onClick={() => this.formRef.current.addField()}
               >
                 <i class="plus icon" />

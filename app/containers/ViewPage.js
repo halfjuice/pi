@@ -104,16 +104,22 @@ export default class ViewPage extends React.Component {
     if (v.viewType == 'table') {
       return (
         <div>
-          <div className="ui top attached header">{v.name}</div>
-          <div className="ui attached form segment">
-            <ObjectTableView
-              type={this.state.type}
-              objects={this.state.data}
-              totalPage={this.state.totalPage}
-              page={this.state.page}
-              onPageChange={page => this.setState({page: page}, this.refetchTableView.bind(this))}
-            />
+          <div class="ui grid">
+            <div class="sixteen wide column">
+              <h2>
+                <i class="table alternate icon" />
+                {v.name}
+              </h2>
+            </div>
           </div>
+
+          <ObjectTableView
+            type={this.state.type}
+            objects={this.state.data}
+            totalPage={this.state.totalPage}
+            page={this.state.page}
+            onPageChange={page => this.setState({page: page}, this.refetchTableView.bind(this))}
+          />
         </div>
       );
     }
