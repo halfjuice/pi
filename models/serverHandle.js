@@ -11,6 +11,7 @@ PrimType = {
 
 HistoryType = {
   Update: 'update',
+  UpdateWithChanges: 'updateWithChanges',
 }
 
 DiffType = {
@@ -40,11 +41,21 @@ ServerHandle = {
     return db().update({_id: id}, {$set: mergeDict(adds, updates), $unset: removes}).then(() => {
       // Only removes and updates needs to be updated
       // BULK OPERATION!
-      return db().update({type: id}, {$unset: mergeDict(removes, updates)});
+      return db().update({type: id}, {$unset: mergeDict(removes, updates)}).then(res => {
+        db().insert({
+          type: PrimType.History,
+          historyType: HistoryType.UpdateWithChanges,
+          target: id,
+          adds: adds,
+          removes: removes,
+          updates: updates,
+        });
+        return res;
+      });
     });
   },
 
-  updateObject: (id, newValue) => {
+  updateObject: (id, updates) => {
     return ServerHandle.getObjectByID(id).then(obj => {
       if (obj.type == PrimType.Type || obj.type == PrimType.History) {
         throw Error.UpdateDirectlyNotSupported;
@@ -56,7 +67,7 @@ ServerHandle = {
       }
 
       // TODO: Check for legal object
-      return db().update({_id: id}, {$set: newValue}).then(() => {
+      return db().update({_id: id}, {$set: updates}).then(() => {
         db().insert({
           type: PrimType.History,
           historyType: HistoryType.Update,

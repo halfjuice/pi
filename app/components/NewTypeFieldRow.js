@@ -86,9 +86,9 @@ export default class NewTypeFieldRow extends React.Component {
             : valueSelect
           }
         </td>
-        <td className="one wide">
-          <button class="ui negative icon basic button" onClick={() => this.props.onRemoveClick && this.props.onRemoveClick()}>
-            <i class="delete icon"></i>
+        <td className="one wide right aligned">
+          <button class="ui icon basic button" onClick={() => this.props.onRemoveClick && this.props.onRemoveClick()}>
+            <i class="red delete icon"></i>
           </button>
         </td>
       </tr>

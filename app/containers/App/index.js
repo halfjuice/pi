@@ -29,8 +29,7 @@ import GlobalStyle from '../../global-styles';
 
 
 const AppWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
-  margin: 0 auto;
+  margin: 0 16px;
   display: flex;
   flex-direction: column;
 `;

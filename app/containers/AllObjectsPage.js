@@ -14,6 +14,8 @@ export default class AllObjectsPage extends React.Component {
       pageLimit: 10,
       page: 0,
       totalPage: 1,
+
+      editing: false,
     };
   }
 
@@ -44,11 +46,22 @@ export default class AllObjectsPage extends React.Component {
         </div>
 
         <div class="ui grid">
-          <div class="sixteen wide column">
+          <div class="six wide column">
             <h2>
               <i class="table alternate icon" />
               All {this.state.type && (this.state.type['name'] + ' ')}Object
             </h2>
+          </div>
+          <div class="ten wide right aligned column">
+            <div class="ui icon basic buttons">
+              <button
+                class="ui basic button"
+                onClick={() => this.setState({editing: !this.state.editing})}
+              >
+                <i class="blue edit icon" />
+                Edit
+              </button>
+            </div>
           </div>
         </div>
 
@@ -58,6 +71,7 @@ export default class AllObjectsPage extends React.Component {
           totalPage={this.state.totalPage}
           page={this.state.page}
           onPageChange={page => this.setState({page: page}, this.refetch.bind(this))}
+          editable={this.state.editing}
         />
       </div>
     );

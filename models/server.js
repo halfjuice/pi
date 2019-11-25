@@ -14,13 +14,17 @@ const Server = {
     db().find(query).skip(pageNo*pageLimit).limit(pageLimit),
     db().count(query),
   ]).then(([objs, cnt]) => ({total: cnt, data: objs})),
-  updateObject: (id, newValue) => h.updateObject(id, newValue),
+  updateObject: (id, updates) => h.updateObject(id, updates),
   updateTypeWithChanges: (id, adds, removes, updates) => h.updateTypeWithChanges(id, adds, removes, updates),
   searchObjects: (type, text, skip, limit) => {
     let pat = new RegExp(text);
     if (!isNaN(type)) {
       type = parseInt(type);
     }
+    if (!text) {
+      return db().find({type: type}).skip(skip).limit(limit);
+    }
+
     return db().find({
       type: type,
       $or: [

@@ -12,6 +12,15 @@ export default class ObjectSearchDropdown extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.props.onSearch && this.props.onSearch('').then(res => {
+      this.setState({
+        raw: res,
+        options: this.postProcess(res),
+      });
+    });
+  }
+
   render() {
     var passedProps = {};
     [
