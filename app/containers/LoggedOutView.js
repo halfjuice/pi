@@ -41,7 +41,7 @@ export default class LoggedOutView extends React.Component {
               </tr>
               <tr>
                 <td className="six wide right aligned"><b>Password</b></td>
-                <td className="ten wide"><input ref={c => {this.passwordInput = c; }} type="text" placeholder="Password" /></td>
+                <td className="ten wide"><input ref={c => {this.passwordInput = c; }} type="password" placeholder="Password" /></td>
               </tr>
             </tbody>
             <tfoot>
