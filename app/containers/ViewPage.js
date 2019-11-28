@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { getObjectByID, findObjects, findPagedObjects } from '../../models/client';
 import NewObjectForm from '../components/NewObjectForm';
-import ObjectTableView from '../components/ObjectTableView';
+import QueryObjectTableView from '../components/QueryObjectTableView';
 import moment from 'moment';
 
 import FullCalendar from '@fullcalendar/react'
@@ -31,24 +31,11 @@ export default class ViewPage extends React.Component {
   componentDidMount() {
     getObjectByID(this.props.match.params.view_id).then(v => {
       this.setState({view: v}, () => {
-        if (v.viewType == 'table') {
-          this.refetchTableView();
-        } else if (v.viewType == 'calendar') {
+        if (v.viewType == 'calendar') {
           this.refetchCalendarView();
         }
       });
       getObjectByID(v.objectType).then(ot => this.setState({type: ot}));
-    });
-  }
-
-  refetchTableView() {
-    var query = this.state.view.filter || {};
-    query['type'] = this.state.view.objectType;
-    findPagedObjects(query, this.state.pageLimit, this.state.page).then(data => {
-      this.setState({
-        data: data.data,
-        totalPage: Math.ceil(data.total / this.state.pageLimit),
-      });
     });
   }
 
@@ -113,12 +100,10 @@ export default class ViewPage extends React.Component {
             </div>
           </div>
 
-          <ObjectTableView
-            type={this.state.type}
-            objects={this.state.data}
-            totalPage={this.state.totalPage}
-            page={this.state.page}
-            onPageChange={page => this.setState({page: page}, this.refetchTableView.bind(this))}
+          <QueryObjectTableView
+            type={this.state.view.objectType}
+            query={this.state.view.filter}
+            pageLimit={10}
           />
         </div>
       );

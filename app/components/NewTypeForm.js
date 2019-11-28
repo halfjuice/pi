@@ -14,7 +14,7 @@ export default class NewTypeForm extends React.Component {
       typeName: props.type ? props.type.name : '',
       fields: props.type
         ? obj2tuples(props.type)
-          .filter(x => !['_id', 'type', 'name'].includes(x[0]))
+          .filter(x => !['_id', '_rev', 'type', 'name'].includes(x[0]))
           .map(t => t.concat(['fixedKey']))
         : [],
 

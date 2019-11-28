@@ -6,7 +6,7 @@ const h = require('./serverHandle');
 const db = h.db;
 
 const Server = {
-  createObject: fields => db().insert(fields),
+  createObject: fields => h.insert(fields),
   getObjectByID: id => db().findOne({ _id: id }),
   findObjectsByIDs: ids => Promise.all(ids.map(id => db().findOne({_id: id}))),
   findObjects: (query, skip, limit) => db().find(query).skip(skip).limit(limit),

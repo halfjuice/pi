@@ -147,7 +147,7 @@ export default class QuerySpecRow extends React.Component {
       <table className="ui form table">
         <thead>
           <tr>
-            <th colspan="2">
+            <th colSpan="2">
               Query Filter
             </th>
           </tr>
@@ -156,7 +156,7 @@ export default class QuerySpecRow extends React.Component {
           {this.state.querySpecs.map((spec, i) =>
             <QueryNewTypeFieldRow
               type={this.props.type}
-              typeFields={obj2tuples(this.props.type).filter(x => ['_id', 'type'].indexOf(x[0]) == -1)}
+              typeFields={obj2tuples(this.props.type).filter(x => !['_id', '_rev', 'type'].includes(x[0]))}
               onChange={(f, v) => {
                 var s = this.state.querySpecs;
                 s[i] = [f, v];
@@ -167,7 +167,7 @@ export default class QuerySpecRow extends React.Component {
         </tbody>
         <tfoot>
           <tr>
-            <th colspan="2">
+            <th colSpan="2">
               <button
                 class="ui right floated button"
                 onClick={() => this.setState(

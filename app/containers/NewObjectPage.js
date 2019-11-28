@@ -18,14 +18,14 @@ export default class NewObjectPage extends React.Component {
           </Link>
         </div>
 
-        <div class="ui grid">
-          <div class="four wide column">
+        <div className="ui grid">
+          <div className="four wide column">
             <h2>
-              <i class="plus square outline icon" />
+              <i className="plus square outline icon" />
               New Object
             </h2>
           </div>
-          <div class="twelve wide right aligned column">
+          <div className="twelve wide right aligned column">
 
           </div>
         </div>

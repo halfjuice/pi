@@ -1,57 +1,211 @@
 import axios from 'axios';
+import util from 'util';
+import { mergeDict, tuples2obj } from '../app/utils/helper';
 
-export function createObject(fields) {
-  return axios.put('/v1/objects/', fields).then(res => res.data);
+const HOST = 'https://notely.halfjuice.com:6984/'
+
+import PouchDB from 'pouchdb';
+import PouchFind from 'pouchdb-find';
+import PouchAuth from 'pouchdb-authentication';
+PouchDB.plugin(PouchFind);
+PouchDB.plugin(PouchAuth);
+
+var __localSessionCache = {};
+
+export function logIn(username, password) {
+  var db = new PouchDB(HOST + '_users', {skip_setup: true});
+  return db.logIn(username, password).then(() => {
+    __localSessionCache = {loaded: true, username: username};
+  });
 }
 
-export function getObjectByID(id) {
-  return axios.get(`/v1/objects/${id}`).then(res => res.data);
+export function signUp(username, password) {
+  var db = new PouchDB(HOST + '_users', {skip_setup: true});
+  return db.signUp(username, password);
 }
 
-export function updateObject(id, newValue) {
-  return axios.post(`/v1/objects/${id}`, newValue).then(res => res.data);
+export function logOut() {
+  var db = new PouchDB(HOST + '_users', {skip_setup: true});
+  return db.logOut().then(() => {
+    __localSessionCache = {loaded: true, username: null};
+  });
 }
 
-export function updateTypeWithChanges(id, adds, removes, updates) {
-  return axios.post(`/v1/types/${id}/changes`, {adds, removes, updates}).then(res => res.data);
+export function changePassword(username, password) {
+  var db = new PouchDB(HOST + '_users', {skip_setup: true});
+  return db.changePassword(username, password);
 }
 
-export function findObjectsByIDs(ids) {
-  return axios.get(`/v1/objects/multiID`, {
-    params: {ids: JSON.stringify(ids)}
-  }).then(res => res.data);
+export function getCurrentUsername() {
+  if (__localSessionCache.loaded) {
+    return Promise.resolve(__localSessionCache.username);
+  }
+
+  var db = new PouchDB(HOST + '_users', {skip_setup: true});
+  return db.getSession().then(res => {
+    __localSessionCache = {loaded: true, username: res.userCtx.name};
+    return __localSessionCache.username;
+  })
 }
 
-export function findObjects(query, skip, limit) {
-  return axios.get('/v1/objects', {
-	  params: {
-      query: JSON.stringify(query),
-	    skip: skip,
-	    limit: limit,
-	  },
-  }).then(res => res.data);
+function _nameToHex(name) {
+  var hex = '';
+  for (var i=0; i<name.length; i++) {
+    hex += '' + name.charCodeAt(i).toString(16);
+  }
+  return hex;
 }
 
-export function findPagedObjects(query, pageLimit, pageNo) {
-  return axios.get('/v1/objects/paged', {
-	  params: {
-      query: JSON.stringify(query),
-	    limit: pageLimit,
-	    page: pageNo,
-	  },
-  }).then(res => res.data);
+function _getUserRemoteDatabase() {
+  return getCurrentUsername().then(name => name ? new PouchDB(HOST + 'userdb-' + _nameToHex(name)) : null);
 }
 
-export function searchObjects(type, text, skip, limit) {
-  return axios.get('/v1/objects/search', {
-    params: {
-      type: type,
-      text: text,
+function _getUserDatabase() {
+  return _getUserRemoteDatabase()
+    .then(remoteDB => {
+      return getCurrentUsername().then(name => {
+        if (!name) {
+          return new PouchDB('loggedOutLocal');
+        }
+
+        var localDB = new PouchDB('local-' + _nameToHex(name));
+        localDB.createIndex({index: {fields: ['type']}});
+        localDB.sync(remoteDB, {live: true, retry: true});
+        return localDB;
+      })
+    });
+}
+
+const udb = _getUserDatabase;
+
+// v2 client
+
+const V2 = {
+  createObject: fields => udb().then(db => db.post(fields)),
+  getObjectByID: id => udb().then(db => db.get(id)),
+
+  findObjectsByIDs: ids => udb().then(db => db.allDocs({keys: ids})).then(res => res.rows.map(r => r.doc)),
+
+  findObjects: (query, skip, limit) => udb()
+    .then(db => db.find({selector: query, skip: skip, limit: limit}))
+    .then(res => res.docs),
+
+  findPagedObjects: (query, pageLimit, pageNo) => udb()
+    .then(db => {
+      return Promise.all([
+        db.find({selector: query, skip: pageNo*pageLimit, limit: pageLimit}),
+        db.find({selector: query, fields: ['_id']}),
+      ]).then(([objs, cnt]) => ({total: cnt.docs.length, data: objs.docs}));
+    }),
+
+  updateObject: (id, updates) => udb().then(db =>
+    db.get(id).then(doc => db.put(mergeDict(doc, update)))
+  ),
+
+  updateTypeWithChanges: (id, adds, removes, updates) => {
+    throw 'NOT IMPLEMENTED!!!!';
+  },
+
+  searchObjects: (type, text, skip, limit) => udb().then(db => {
+    let pat = new RegExp(text);
+    if (!isNaN(type)) {
+      type = parseInt(type);
+    }
+
+    return db.find({
+      selector: {
+        type: type,
+        $or: [
+          {_id: {$regex: pat}},
+          {name: {$regex: pat}},
+          {description: {$regex: pat}},
+        ],
+      },
       skip: skip,
       limit: limit,
-    },
-  }).then(res => res.data);
+    }).then(res => res.docs);
+  }),
+
+  deleteObject: (id) => udb().then(db =>
+    db.remove(id)
+  ),
 }
+
+const createObject = V2.createObject;
+const getObjectByID = V2.getObjectByID;
+const findObjectsByIDs = V2.findObjectsByIDs;
+const findObjects = V2.findObjects;
+const findPagedObjects = V2.findPagedObjects;
+const updateObject = V2.updateObject;
+const updateTypeWithChanges = V2.updateTypeWithChanges;
+const searchObjects = V2.searchObjects;
+
+export {
+  V2,
+  createObject,
+  getObjectByID,
+  findObjectsByIDs,
+  findObjects,
+  findPagedObjects,
+  updateObject,
+  updateTypeWithChanges,
+  searchObjects,
+}
+
+// v1 client
+
+//export function createObject(fields) {
+//  return axios.put('/v1/objects/', fields).then(res => res.data);
+//}
+//
+//export function getObjectByID(id) {
+//  return axios.get(`/v1/objects/${id}`).then(res => res.data);
+//}
+//
+//export function updateObject(id, newValue) {
+//  return axios.post(`/v1/objects/${id}`, newValue).then(res => res.data);
+//}
+//
+//export function updateTypeWithChanges(id, adds, removes, updates) {
+//  return axios.post(`/v1/types/${id}/changes`, {adds, removes, updates}).then(res => res.data);
+//}
+//
+//export function findObjectsByIDs(ids) {
+//  return axios.get(`/v1/objects/multiID`, {
+//    params: {ids: JSON.stringify(ids)}
+//  }).then(res => res.data);
+//}
+//
+//export function findObjects(query, skip, limit) {
+//  return axios.get('/v1/objects', {
+//	  params: {
+//      query: JSON.stringify(query),
+//	    skip: skip,
+//	    limit: limit,
+//	  },
+//  }).then(res => res.data);
+//}
+//
+//export function findPagedObjects(query, pageLimit, pageNo) {
+//  return axios.get('/v1/objects/paged', {
+//	  params: {
+//      query: JSON.stringify(query),
+//	    limit: pageLimit,
+//	    page: pageNo,
+//	  },
+//  }).then(res => res.data);
+//}
+//
+//export function searchObjects(type, text, skip, limit) {
+//  return axios.get('/v1/objects/search', {
+//    params: {
+//      type: type,
+//      text: text,
+//      skip: skip,
+//      limit: limit,
+//    },
+//  }).then(res => res.data);
+//}
 
 export function createDummyData() {
   return Promise.all([
@@ -85,10 +239,4 @@ export function createDummyData() {
     });;
   })
 
-}
-
-export function createDummyData1() {
-  return Promise.all([
-
-  ]);
 }

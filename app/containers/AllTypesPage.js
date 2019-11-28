@@ -25,10 +25,10 @@ export default class AllTypesPage extends React.Component {
           </Link>
         </div>
 
-        <div class="ui grid">
-          <div class="sixteen wide column">
+        <div className="ui grid">
+          <div className="sixteen wide column">
             <h2>
-              <i class="cubes icon" />
+              <i className="cubes icon" />
               All Types
             </h2>
           </div>
@@ -54,16 +54,16 @@ export default class AllTypesPage extends React.Component {
                   </Link>
                 </td>
                 <td>
-                  <div class="mini ui icon basic buttons">
+                  <div className="mini ui icon basic buttons">
                     <Link
-                      class="ui basic button"
+                      className="ui basic button"
                       to={'/all_objects/' + t['_id']}
                     >
                       <i className="eye icon" />
                       View
                     </Link>
                     <Link
-                      class="ui basic button"
+                      className="ui basic button"
                       to={'/new_object/' + t['_id']}
                     >
                       <i className="plus square outline icon" />
@@ -73,9 +73,9 @@ export default class AllTypesPage extends React.Component {
                 </td>
 
                 <td>
-                  <div class="mini ui icon basic buttons">
+                  <div className="mini ui icon basic buttons">
                     <Link
-                      class="ui basic button"
+                      className="ui basic button"
                       to={'/update_type/' + t['_id']}
                     >
                       <i className="edit icon" />

@@ -55,7 +55,7 @@ export default class NewObjectForm extends React.Component {
             </td>
           </tr>
           {obj2tuples(this.state.type).map((tup, i) =>
-            tup[0] == '_id' || tup[0] == 'type' || tup[0] == 'name'
+            ['_id', '_rev', 'type', 'name'].includes(tup[0])
               ? null
               : <tr key={`field_${i}`}>
                   <td className="six wide right aligned">

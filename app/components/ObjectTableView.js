@@ -53,7 +53,7 @@ export default class ObjectTableView extends React.Component {
                         updateObject(o._id, this.state.pendingChanges[o._id]).then(res => {
                           delete this.state.pendingChanges[o._id];
                           this.setState({pendingChanges: this.state.pendingChanges});
-                          // TODO: Update value logic
+                          // TODO: Should update value after this
                         });
                       }}>
                         <i className="blue refresh icon" />
@@ -97,14 +97,13 @@ export default class ObjectTableView extends React.Component {
       typ = 'text';
     }
 
-    if (this.props.editable && !['_id', 'type'].includes(k)) {
+    if (this.props.editable && !['_id', '_rev', 'type'].includes(k)) {
       return (
         <FieldValueInput
           fieldKey={k}
           fieldType={typ}
           value={v}
           onChange={(k, v) => {
-            console.log(o._id, k, v);
             if (!this.state.pendingChanges[o._id]) {
               this.state.pendingChanges[o._id] = {}
             }

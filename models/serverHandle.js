@@ -10,6 +10,7 @@ PrimType = {
 }
 
 HistoryType = {
+  Create: 'create',
   Update: 'update',
   UpdateWithChanges: 'updateWithChanges',
 }
@@ -36,6 +37,19 @@ ServerHandle = {
 
   getObjectByID: (id) => db().findOne({_id: id}),
 
+  insert: (fields) => {
+    return db().insert(fields).then(res => {
+      db().insert({
+        type: PrimType.History,
+        historyType: HistoryType.Create,
+        target: res._id,
+        obj: fields,
+        time: new Date().getTime(),
+      })
+      return res;
+    });
+  },
+
   updateTypeWithChanges: (id, adds, removes, updates) => {
     removes = tuples2obj(removes.map(e => [e, true]));
     return db().update({_id: id}, {$set: mergeDict(adds, updates), $unset: removes}).then(() => {
@@ -49,6 +63,7 @@ ServerHandle = {
           adds: adds,
           removes: removes,
           updates: updates,
+          time: new Date().getTime(),
         });
         return res;
       });
@@ -74,6 +89,7 @@ ServerHandle = {
           target: id,
           oldValue: obj,
           newValue: newValue,
+          time: new Date().getTime(),
         });
       });
     })
