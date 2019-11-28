@@ -11,26 +11,26 @@ export default class NewTypePage extends React.Component {
   render() {
     return (
       <div>
-        <div class="ui menu">
-          <Link class="item" to="/">
+        <div className="ui menu">
+          <Link className="item" to="/">
             Home
           </Link>
         </div>
 
-        <div class="ui grid">
-          <div class="four wide column">
+        <div className="ui grid">
+          <div className="four wide column">
             <h2>
-              <i class="file alternate icon" />
+              <i className="file alternate icon" />
               New Type
             </h2>
           </div>
-          <div class="twelve wide right aligned column">
-            <div class="ui icon basic buttons">
+          <div className="twelve wide right aligned column">
+            <div className="ui icon basic buttons">
               <button
-                class="ui basic button"
+                className="ui basic button"
                 onClick={() => this.formRef.current.addField()}
               >
-                <i class="blue plus icon" />
+                <i className="blue plus icon" />
                 New Field
               </button>
             </div>

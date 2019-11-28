@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { createObject, getObjectByID, searchObjects, updateObject } from '../../models/client';
 import { tuples2obj, obj2tuples } from '../utils/helper';

@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { updateObject } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
@@ -105,8 +106,12 @@ export default class ObjectTableView extends React.Component {
 
     if (k == '_id') {
       return <Link to={`/view_object/${v}`}>{v}</Link>;
+    } else if (k == 'type') {
+      return <Link to={`/view_type/${this.props.type._id}`}>{this.props.type.name}</Link>;
     } else if (typ == 'color') {
       return <span style={{backgroundColor: v, padding: '4px', borderRadius: '4px',}}>{v}</span>;
+    } else if (typ == 'datetime'){
+      return moment(v).format('LLL');
     } else {
       return v;
     }

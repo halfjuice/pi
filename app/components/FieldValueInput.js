@@ -2,9 +2,14 @@ import React from 'react';
 import moment from 'moment';
 import { getObjectByID, searchObjects } from '../../models/client';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
+import NewObjectForm from './NewObjectForm';
 import { Popup, Button, Modal } from 'semantic-ui-react';
 
 export default class FieldValueInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
   render() {
     if (this.props.fieldType == 'text') {

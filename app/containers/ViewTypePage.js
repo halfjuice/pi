@@ -21,31 +21,31 @@ export default class ViewTypePage extends React.Component {
   render() {
     return (
       <div>
-        <div class="ui menu">
-          <Link class="item" to="/">
+        <div className="ui menu">
+          <Link className="item" to="/">
             Home
           </Link>
         </div>
-        <div class="ui top attached header">Type Info</div>
-        <div class="ui attached form segment">
+        <div className="ui top attached header">Type Info</div>
+        <div className="ui attached form segment">
           <p>{this.state.type && this.state.type.name}</p>
-          <div class="ui right aligned grid">
-            <div class="sixteen wide column">
-              <div class="mini ui buttons">
+          <div className="ui right aligned grid">
+            <div className="sixteen wide column">
+              <div className="mini ui buttons">
                 <Link
-                  class="mini ui button"
+                  className="mini ui button"
                   to={'/all_objects/' + this.props.match.params.type_id}
                 >
                   View Objects
                 </Link>
                 <Link
-                  class="mini ui button"
+                  className="mini ui button"
                   to={'/new_object/' + this.props.match.params.type_id}
                 >
                   Create Object
                 </Link>
                 <Link
-                  class="mini ui button"
+                  className="mini ui button"
                   to={'/update_type/' + this.props.match.params.type_id}
                 >
                   Update Type

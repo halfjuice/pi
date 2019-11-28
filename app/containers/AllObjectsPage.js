@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getObjectByID } from '../../models/client';
+import { getObjectByID, getCurrentUsername } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
 import QueryObjectTableView from '../components/QueryObjectTableView';
 
@@ -14,6 +14,7 @@ export default class AllObjectsPage extends React.Component {
 
   componentDidMount() {
     getObjectByID(this.props.match.params.type_id).then(res => this.setState({type: res}));
+    getCurrentUsername().then(n => n ? null : this.props.history.push('/'));
   }
 
   render() {
