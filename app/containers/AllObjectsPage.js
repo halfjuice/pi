@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { findObjects, findPagedObjects, getObjectByID } from '../../models/client';
+import { getObjectByID } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
 import QueryObjectTableView from '../components/QueryObjectTableView';
 
@@ -10,6 +10,10 @@ export default class AllObjectsPage extends React.Component {
     this.state = {
       editing: false,
     };
+  }
+
+  componentDidMount() {
+    getObjectByID(this.props.match.params.type_id).then(res => this.setState({type: res}));
   }
 
   render() {
@@ -37,6 +41,13 @@ export default class AllObjectsPage extends React.Component {
                 <i className="blue edit icon" />
                 Edit
               </button>
+              <Link
+                className="ui basic button"
+                to={`/new_object/${this.state.type && this.state.type._id}`}
+              >
+                <i className="green plus icon" />
+                Create
+              </Link>
             </div>
           </div>
         </div>

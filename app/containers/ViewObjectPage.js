@@ -66,7 +66,6 @@ export default class ViewObjectPage extends React.Component {
   }
 
   render() {
-
     return (
       <div>
         <div className="ui menu">
@@ -75,20 +74,20 @@ export default class ViewObjectPage extends React.Component {
           </Link>
         </div>
 
-        <div class="ui grid">
-          <div class="four wide column">
+        <div className="ui grid">
+          <div className="four wide column">
             <h2>
-              <i class="file alternate icon" />
+              <i className="file alternate icon" />
               View Object
             </h2>
           </div>
-          <div class="twelve wide right aligned column">
-            <div class="mini ui icon buttons">
+          <div className="twelve wide right aligned column">
+            <div className="mini ui icon buttons">
             </div>
           </div>
         </div>
 
-        {this.state.obj && <NewObjectForm typeId={this.state.obj.type} object={this.state.obj} />}
+        {this.state.obj && <NewObjectForm typeID={this.state.obj.type} object={this.state.obj} />}
 
       </div>
     );

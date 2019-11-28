@@ -10,8 +10,7 @@ export default class ObjectTableView extends React.Component {
     super(props);
 
     this.state = {
-      pendingChanges: {},
-    }
+    };
   }
 
   render() {
@@ -44,18 +43,12 @@ export default class ObjectTableView extends React.Component {
               {this.props.editable &&
                 <td>
                   <div className="mini ui icon basic buttons">
-                    <button className="ui basic button">
+                    <button className="ui basic button" onClick={() => this.props.onDeleteClick && this.props.onDeleteClick(o)}>
                       <i className="red delete icon" />
                       Delete
                     </button>
-                    {this.state.pendingChanges[o._id] &&
-                      <button className="ui basic button" onClick={() => {
-                        updateObject(o._id, this.state.pendingChanges[o._id]).then(res => {
-                          delete this.state.pendingChanges[o._id];
-                          this.setState({pendingChanges: this.state.pendingChanges});
-                          // TODO: Should update value after this
-                        });
-                      }}>
+                    {(this.props.pendingChanges || {})[o._id] &&
+                      <button className="ui basic button" onClick={() => this.props.onUpdateClick && this.props.onUpdateClick(o)}>
                         <i className="blue refresh icon" />
                         Update
                       </button>
@@ -91,7 +84,7 @@ export default class ObjectTableView extends React.Component {
   renderCell(o, t) {
     let k = t[0];
     let typ = t[1];
-    let v = (this.state.pendingChanges[o._id] && this.state.pendingChanges[o._id][k]) || o[k];
+    let v = ((this.props.pendingChanges || {})[o._id] && (this.props.pendingChanges || {})[o._id][k]) || o[k];
 
     if (k == 'name') {
       typ = 'text';
@@ -104,11 +97,7 @@ export default class ObjectTableView extends React.Component {
           fieldType={typ}
           value={v}
           onChange={(k, v) => {
-            if (!this.state.pendingChanges[o._id]) {
-              this.state.pendingChanges[o._id] = {}
-            }
-            this.state.pendingChanges[o._id][k] = v;
-            this.setState({pendingChanges: this.state.pendingChanges});
+            this.props.onFieldChange && this.props.onFieldChange(o._id, k, v);
           }}
         />
       );

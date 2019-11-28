@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { findPagedObjects, getObjectByID } from '../../models/client';
+import { findPagedObjects, getObjectByID, updateObject, deleteObject } from '../../models/client';
 import { mergeDict, obj2tuples } from '../utils/helper';
 import ObjectTableView from './ObjectTableView';
 
 export default class QueryObjectTableView extends React.Component {
 
-  propTypes = {
-    type: PropTypes.object,
+  static propTypes = {
+    type: PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.number]),
     query: PropTypes.object,
 
     pageLimit: PropTypes.number,
@@ -64,6 +64,26 @@ export default class QueryObjectTableView extends React.Component {
         page={this.state.page}
         onPageChange={page => this.setState({page: page}, this.refresh.bind(this))}
         editable={this.props.editable}
+        pendingChanges={this.state.pendingChanges}
+        onFieldChange={(oid, k, v) => {
+          if (!this.state.pendingChanges[oid]) {
+            this.state.pendingChanges[oid] = {};
+          }
+          this.state.pendingChanges[oid][k] = v;
+          this.setState({pendingChanges: this.state.pendingChanges});
+        }}
+        onUpdateClick={o => {
+          updateObject(o._id, (this.state.pendingChanges || {})[o._id]).then(res => {
+            delete this.state.pendingChanges[o._id];
+            this.setState({pendingChanges: this.state.pendingChanges}, this.refresh.bind(this));
+          });
+        }}
+        onDeleteClick={o => {
+          deleteObject(o).then(res => {
+            delete this.state.pendingChanges[o];
+            this.setState({pendingChanges: this.state.pendingChanges}, this.refresh.bind(this));
+          });
+        }}
       />
     )
   }

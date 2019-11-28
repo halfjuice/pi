@@ -99,10 +99,11 @@ const V2 = {
     }),
 
   updateObject: (id, updates) => udb().then(db =>
-    db.get(id).then(doc => db.put(mergeDict(doc, update)))
+    db.get(id).then(doc => db.put(mergeDict(doc, updates)))
   ),
 
   updateTypeWithChanges: (id, adds, removes, updates) => {
+    // TODO:
     throw 'NOT IMPLEMENTED!!!!';
   },
 
@@ -126,8 +127,8 @@ const V2 = {
     }).then(res => res.docs);
   }),
 
-  deleteObject: (id) => udb().then(db =>
-    db.remove(id)
+  deleteObject: (doc) => udb().then(db =>
+    db.remove(doc)
   ),
 }
 
@@ -139,6 +140,7 @@ const findPagedObjects = V2.findPagedObjects;
 const updateObject = V2.updateObject;
 const updateTypeWithChanges = V2.updateTypeWithChanges;
 const searchObjects = V2.searchObjects;
+const deleteObject = V2.deleteObject;
 
 export {
   V2,
@@ -150,6 +152,7 @@ export {
   updateObject,
   updateTypeWithChanges,
   searchObjects,
+  deleteObject,
 }
 
 // v1 client

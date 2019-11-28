@@ -32,6 +32,16 @@ export default class NewObjectForm extends React.Component {
               {this.props.object ? this.props.object._id : '<Assigned>'}
             </td>
           </tr>
+          {this.props.object &&
+            <tr>
+              <td className="six wide right aligned">
+                <b>Revision</b>
+              </td>
+              <td className="twelve wide">
+                {this.props.object._rev}
+              </td>
+            </tr>
+          }
           {this.state.type
             ? <tr>
                 <td className="six wide right aligned">

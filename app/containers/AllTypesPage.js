@@ -26,11 +26,22 @@ export default class AllTypesPage extends React.Component {
         </div>
 
         <div className="ui grid">
-          <div className="sixteen wide column">
+          <div className="six wide column">
             <h2>
               <i className="cubes icon" />
               All Types
             </h2>
+          </div>
+          <div className="ten wide right aligned column">
+            <div className="ui icon basic buttons">
+              <Link
+                className="ui basic button"
+                to="/new_type"
+              >
+                <i className="green plus icon" />
+                Create
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -46,7 +57,7 @@ export default class AllTypesPage extends React.Component {
 
           <tbody>
             {this.state.types.map((t, i) =>
-              <tr>
+              <tr key={`row-${t['_id']}`}>
                 <td>{t['_id']}</td>
                 <td>
                   <Link className="header" to={`/view_type/${t['_id']}`}>
