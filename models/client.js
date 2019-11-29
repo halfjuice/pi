@@ -10,6 +10,14 @@ import PouchAuth from 'pouchdb-authentication';
 PouchDB.plugin(PouchFind);
 PouchDB.plugin(PouchAuth);
 
+const PrimType = {
+  Type: 0,
+  // DEPRECATED
+  //RelType: 1,
+  View: 2,
+  History: 3,
+}
+
 var __localSessionCache = {};
 
 export function logIn(username, password) {
@@ -103,8 +111,32 @@ const V2 = {
   ),
 
   updateTypeWithChanges: (id, adds, removes, updates) => {
-    // TODO:
-    throw 'NOT IMPLEMENTED!!!!';
+    return udb().then(db => {
+      db.get(id).then(t => {
+        if (t.type != PrimType.Type) {
+          throw 'Cannot update non type with this function';
+        }
+
+        var newT = mergeDict(mergeDict(t, updates), adds);
+        removes.forEach(r => {
+          delete newT[r];
+        });
+        return newT;
+      }).then(newT => {
+        return Promise.all([
+          db.put(newT),
+          db.find({selector: {type: newT._id}}).then(res =>
+            db.bulkDocs(res.docs.map(doc => {
+              removes.forEach(r => { delete doc[r] });
+              for (var u in updates) { delete doc[u] }
+              return doc;
+            }))
+          ),
+        ]);
+      }).then(() => {
+        // TODO: Add history
+      });
+    });
   },
 
   searchObjects: (type, text, skip, limit) => udb().then(db => {
