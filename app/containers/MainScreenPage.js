@@ -1,6 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getObjectByID, upsertObject, getCurrentUsername, createDummyData, createObject } from '../../models/client';
+import {
+  getObjectByID,
+  upsertObject,
+  getCurrentUsername,
+  createDummyData,
+  createObject,
+  deleteObject,
+} from '../../models/client';
 import { Modal } from 'semantic-ui-react';
 import NewViewForm from '../components/NewViewForm';
 
@@ -13,7 +20,17 @@ class ShortcutItem extends React.Component {
           {this.props.smallIcon && <i className={`corner ${this.props.smallIcon} icon`}></i>}
         </i>
         <p>
-          <Link to={this.props.to} onClick={this.props.onClick}>{this.props.name}</Link>
+          {this.props.to
+            ? <Link to={this.props.to} onClick={this.props.onClick}>{this.props.name}</Link>
+            : <a onClick={this.props.onClick}>{this.props.name}</a>
+          }
+          {
+            this.props.secondaryName &&
+              [
+                <br/>,
+                this.props.secondaryName
+              ]
+          }
         </p>
       </div>
     );
@@ -39,7 +56,7 @@ export default class MainScreenPage extends React.Component {
 
   refresh() {
     getObjectByID('sections').then(doc => {
-      this.setState({sections: doc});
+      this.setState({sections: doc, origSections: JSON.parse(JSON.stringify(doc))});
       doc.sections.forEach(sec => sec.items.forEach(i => getObjectByID(i).then(v => {
         this.state.views[i] = v;
         this.setState({views: this.state.views});
@@ -48,6 +65,66 @@ export default class MainScreenPage extends React.Component {
       if (err.name == 'not_found') {
         // Pass
       }
+    });
+  }
+
+  handleAddSection() {
+    this.state.sections.sections.push({
+      name: 'New Section',
+      items: []
+    });
+    this.setState({sections: this.state.sections});
+  }
+
+  handleAddSectionView(sectionIdx) {
+    this.setState({onAddViewHandler: view => {
+      var vid = `temp_view_${(new Date()).getTime()}`;
+      this.state.views[vid] = view;
+      this.state.sections.sections[sectionIdx].items.push(vid);
+      this.setState({sections: this.state.sections, views: this.state.views, onAddViewHandler: null});
+    }});
+  }
+
+  handleDeleteSectionView(sectionIdx, vid) {
+    var i = this.state.sections.sections[sectionIdx].items.indexOf(vid);
+    if (vid >= 0) {
+      this.state.sections.sections[sectionIdx].items =
+        this.state.sections.sections[sectionIdx].items.slice(0, i).concat(
+          this.state.sections.sections[sectionIdx].items.slice(i+1)
+        );
+    }
+    var vv = this.state.views[vid];
+    delete this.state.views[vid];
+    if (!vid.startsWith('temp_view_')) {
+      deleteObject(vv);
+    }
+    // TODO: Pending delete logic
+    this.setState({sections: this.state.sections, views: this.state.views});
+  }
+
+  handleRemoveSection(idx) {
+    this.state.sections.sections = this.state.sections.sections.slice(0, idx).concat(
+      this.state.sections.sections.slice(idx+1)
+    );
+    this.setState({sections: this.state.sections});
+  }
+
+  handleSaveLayout() {
+    var pending = [];
+    for (var k in this.state.views) {
+      if (k.startsWith('temp_view_')) {
+        var obj = this.state.views[k];
+        pending.push(createObject(obj).then(o => {
+          this.state.views[k]._id = o.id;
+        }));
+      }
+    }
+    Promise.all(pending).then(() => {
+      this.state.sections.sections = this.state.sections.sections.map(sec => ({
+        ...sec,
+        items: sec.items.map(k => this.state.views[k]._id),
+      }))
+      upsertObject(this.state.sections).then(() => this.refresh());
     });
   }
 
@@ -69,20 +146,19 @@ export default class MainScreenPage extends React.Component {
           <div className="ui bulleted horizontal list">
             <a className="item" onClick={() => this.setState({editing: !this.state.editing}, () => {
               if (!this.state.editing) {
-                upsertObject(this.state.sections).then(() => this.refresh());
+                this.handleSaveLayout();
               }
             })}>
               <i className={(this.state.editing ? 'save outline' : 'edit') + ' icon'} />
               {this.state.editing ? 'Save Layout' : 'Edit Layout'}
             </a>
             {this.state.editing &&
-              <a className="item" onClick={() => {
-                this.state.sections.sections.push({
-                  name: 'New Section',
-                  items: []
-                });
-                this.setState({sections: this.state.sections});
-              }}>
+              <a className="item" onClick={() => this.setState({editing: false, sections: this.state.origSections})}>
+                <i className="plus icon" />
+                Cancel Change
+              </a>}
+            {this.state.editing &&
+              <a className="item" onClick={this.handleAddSection.bind(this)}>
                 <i className="plus icon" />
                 Add Section
               </a>}
@@ -90,7 +166,7 @@ export default class MainScreenPage extends React.Component {
         </p>
 
         {this.state.sections.sections.map((sec, i) =>
-          <div className="ui segment">
+          <div key={`section_${i}`} className="ui segment">
             {this.state.editing
               ?
                 <span className="ui teal ribbon label">
@@ -111,28 +187,27 @@ export default class MainScreenPage extends React.Component {
 
             <div className="ui grid">
               <div className="four column row">
-                {sec.items.map(i => this.state.views[i]).map(v =>
-                  v &&
-                    <ShortcutItem
-                      bigIcon={'grey ' + NewViewForm.allViewTypeSpecs()[v.viewType].icon}
-                      to={`/view/${v._id}`}
-                      name={v.name}
-                    />
+                {sec.items.map(vi =>
+                  this.state.views[vi] &&
+                  <ShortcutItem
+                    key={`view_shortcut_${vi}`}
+                    bigIcon={'grey ' + NewViewForm.allViewTypeSpecs()[this.state.views[vi].viewType].icon}
+                    to={`/view/${vi}`}
+                    name={this.state.views[vi].name}
+                    secondaryName={
+                      this.state.editing &&
+                        <a onClick={() => this.handleDeleteSectionView(i, vi)}>
+                          <i className="delete icon" />
+                          Remove
+                        </a>
+                    }
+                  />
                 )}
 
                 {this.state.editing &&
                   <ShortcutItem
-                    bigIcon="grey plus"
-                    onClick={() => {
-                      this.setState({onAddViewHandler: view => {
-                        createObject(view).then(res => {
-                          this.state.sections.sections[i].items.push(res.id);
-                          view._id = res.id;
-                          this.state.views[res.id] = view;
-                          this.setState({sections: this.state.sections, views: this.state.views, onAddViewHandler: null});
-                        });
-                      }})
-                    }}
+                    bigIcon="teal plus"
+                    onClick={() => this.handleAddSectionView(i)}
                     name="Add View"
                   />
                   }
@@ -142,12 +217,7 @@ export default class MainScreenPage extends React.Component {
             {this.state.editing &&
               <p style={{textAlign: 'right'}}>
                 <div className="ui bulleted horizontal list">
-                  <a className="item" onClick={() => {
-                    this.state.sections.sections = this.state.sections.sections.slice(0, i).concat(
-                      this.state.sections.sections.slice(i+1)
-                    );
-                    this.setState({sections: this.state.sections});
-                  }}>
+                  <a className="item" onClick={() => this.handleRemoveSection(i)}>
                     <i className="delete icon" />
                     Remove Section
                   </a>
