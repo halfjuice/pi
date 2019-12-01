@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { findObjects, createDummyData, getCurrentUsername, logOut } from '../../../models/client';
+import MainScreenPage from '../MainScreenPage';
 import LoggedOutView from '../LoggedOutView';
 
 export default class HomePage extends React.Component {
@@ -102,7 +103,7 @@ export default class HomePage extends React.Component {
           </div>
         </div>
         <div className="ten wide column">
-
+          <MainScreenPage />
         </div>
       </div>
     );

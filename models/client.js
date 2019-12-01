@@ -49,6 +49,7 @@ export function getCurrentUsername() {
     return Promise.resolve(__localSessionCache.username);
   }
 
+  // Add logic for disconnected case
   var db = new PouchDB(HOST + '_users', {skip_setup: true});
   return db.getSession().then(res => {
     __localSessionCache = {loaded: true, username: res.userCtx.name};
@@ -90,6 +91,7 @@ const udb = _getUserDatabase;
 
 const V2 = {
   createObject: fields => udb().then(db => db.post(fields)),
+  upsertObject: doc => udb().then(db => db.put(doc)),
   getObjectByID: id => udb().then(db => db.get(id)),
 
   findObjectsByIDs: ids => udb().then(db => db.allDocs({keys: ids})).then(res => res.rows.map(r => r.doc)),
@@ -165,6 +167,7 @@ const V2 = {
 }
 
 const createObject = V2.createObject;
+const upsertObject = V2.upsertObject;
 const getObjectByID = V2.getObjectByID;
 const findObjectsByIDs = V2.findObjectsByIDs;
 const findObjects = V2.findObjects;
@@ -175,8 +178,8 @@ const searchObjects = V2.searchObjects;
 const deleteObject = V2.deleteObject;
 
 export {
-  V2,
   createObject,
+  upsertObject,
   getObjectByID,
   findObjectsByIDs,
   findObjects,
