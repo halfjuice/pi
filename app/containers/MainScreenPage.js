@@ -7,8 +7,9 @@ import {
   createDummyData,
   createObject,
   deleteObject,
+  logOut,
 } from '../../models/client';
-import { Modal } from 'semantic-ui-react';
+import { Dropdown, Modal } from 'semantic-ui-react';
 import NewViewForm from '../components/NewViewForm';
 
 class ShortcutItem extends React.Component {
@@ -131,14 +132,26 @@ export default class MainScreenPage extends React.Component {
   render() {
     return (
       <div>
-        <div className="ui menu">
+        <div className="ui tiny menu">
           <div className="header item">
-            <h3>Notely</h3>
+            <h4>Notely</h4>
           </div>
           <div className="right menu">
             <div className="item">
-              <i className="large cog icon" />
+              <i className="comments icon" />
+              Community
             </div>
+            <Dropdown item icon="cog" simple>
+              <Dropdown.Menu>
+                <Dropdown.Item>
+                  Settings
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={() => logOut().then(() => this.props.onLoggedOut && this.props.onLoggedOut())}>
+                  Logout
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </div>
 
@@ -230,7 +243,6 @@ export default class MainScreenPage extends React.Component {
           <span className="ui olive ribbon label">Admin</span>
           <div className="ui grid">
             <div className="four column row">
-              <ShortcutItem bigIcon="grey eye" smallIcon="olive add" to="/new_view" name="New View" />
               <ShortcutItem bigIcon="grey cubes" smallIcon="olive add" to="/new_type" name="New Type" />
               <ShortcutItem bigIcon="grey cubes" smallIcon="olive list" to="/all_types" name="All Types" />
               <ShortcutItem

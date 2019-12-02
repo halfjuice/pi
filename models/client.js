@@ -69,6 +69,12 @@ function _getUserRemoteDatabase() {
   return getCurrentUsername().then(name => name ? new PouchDB(HOST + 'userdb-' + _nameToHex(name)) : null);
 }
 
+function _getCommunityRemoteDatabase() {
+  var db = new PouchDB(HOST + 'community');
+  db.createIndex({index: {fields: ['author']}});
+  return Promise.resolve(db);
+}
+
 function _getUserDatabase() {
   return _getUserRemoteDatabase()
     .then(remoteDB => {
@@ -85,11 +91,8 @@ function _getUserDatabase() {
     });
 }
 
-const udb = _getUserDatabase;
-
 // v2 client
-
-const V2 = {
+const makeInterfaceForDBGen = (udb) => ({
   createObject: fields => udb().then(db => db.post(fields)),
   upsertObject: doc => udb().then(db => db.put(doc)),
   getObjectByID: id => udb().then(db => db.get(id)),
@@ -164,20 +167,9 @@ const V2 = {
   deleteObject: (doc) => udb().then(db =>
     db.remove(doc)
   ),
-}
+});
 
-const createObject = V2.createObject;
-const upsertObject = V2.upsertObject;
-const getObjectByID = V2.getObjectByID;
-const findObjectsByIDs = V2.findObjectsByIDs;
-const findObjects = V2.findObjects;
-const findPagedObjects = V2.findPagedObjects;
-const updateObject = V2.updateObject;
-const updateTypeWithChanges = V2.updateTypeWithChanges;
-const searchObjects = V2.searchObjects;
-const deleteObject = V2.deleteObject;
-
-export {
+export const {
   createObject,
   upsertObject,
   getObjectByID,
@@ -188,62 +180,9 @@ export {
   updateTypeWithChanges,
   searchObjects,
   deleteObject,
-}
+} = makeInterfaceForDBGen(_getUserDatabase);
 
-// v1 client
-
-//export function createObject(fields) {
-//  return axios.put('/v1/objects/', fields).then(res => res.data);
-//}
-//
-//export function getObjectByID(id) {
-//  return axios.get(`/v1/objects/${id}`).then(res => res.data);
-//}
-//
-//export function updateObject(id, newValue) {
-//  return axios.post(`/v1/objects/${id}`, newValue).then(res => res.data);
-//}
-//
-//export function updateTypeWithChanges(id, adds, removes, updates) {
-//  return axios.post(`/v1/types/${id}/changes`, {adds, removes, updates}).then(res => res.data);
-//}
-//
-//export function findObjectsByIDs(ids) {
-//  return axios.get(`/v1/objects/multiID`, {
-//    params: {ids: JSON.stringify(ids)}
-//  }).then(res => res.data);
-//}
-//
-//export function findObjects(query, skip, limit) {
-//  return axios.get('/v1/objects', {
-//	  params: {
-//      query: JSON.stringify(query),
-//	    skip: skip,
-//	    limit: limit,
-//	  },
-//  }).then(res => res.data);
-//}
-//
-//export function findPagedObjects(query, pageLimit, pageNo) {
-//  return axios.get('/v1/objects/paged', {
-//	  params: {
-//      query: JSON.stringify(query),
-//	    limit: pageLimit,
-//	    page: pageNo,
-//	  },
-//  }).then(res => res.data);
-//}
-//
-//export function searchObjects(type, text, skip, limit) {
-//  return axios.get('/v1/objects/search', {
-//    params: {
-//      type: type,
-//      text: text,
-//      skip: skip,
-//      limit: limit,
-//    },
-//  }).then(res => res.data);
-//}
+export const communityDB = makeInterfaceForDBGen(_getCommunityRemoteDatabase);
 
 export function createDummyData() {
   return Promise.all([
