@@ -35,7 +35,7 @@ export default class NewTypeFieldRow extends React.Component {
           //{key: "boolean", value: "boolean", text: "Yes / No", icon: "check square outline"},
           //{key: "integer", value: "integer", text: "Integer", icon: "hashtag"},
           //{key: "number", value: "number", text: "Number", icon: "hashtag"},
-          //{key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
+          {key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
           //{key: "address", value: "address", text: "Address", icon: "map marker"},
           {key: "date", value: "date", text: "Date", icon: "calendar outline"},
           //{key: "time", value: "time", text: "Time", icon: "clock outline"},
@@ -57,9 +57,10 @@ export default class NewTypeFieldRow extends React.Component {
             ? <b>{this.props.value[0]}</b>
             :
               <input
+                type="text"
                 className="right aligned"
                 placeholder={`Field Name ${this.props.index + 1}`}
-                value={this.props.value[0]}
+                //value={this.props.value[0]}
                 onChange={v => {
                   this.setState({keyName: v.target.value}, this.updateChange.bind(this));
                 }}

@@ -4,6 +4,7 @@ import { getObjectByID, searchObjects } from '../../models/client';
 import ObjectSearchDropdown from '../components/ObjectSearchDropdown';
 import NewObjectForm from './NewObjectForm';
 import { Popup, Button, Modal } from 'semantic-ui-react';
+import { canRenderEditableField, renderEditableField } from './FieldSpec';
 
 export default class FieldValueInput extends React.Component {
   constructor(props) {
@@ -17,7 +18,7 @@ export default class FieldValueInput extends React.Component {
         <input
           placeholder={`${this.props.fieldKey} Value`}
           value={this.props.value || ''}
-          onChange={v => this.handlefieldTypeChange(v.target.value, this.props.fieldKey)}
+          onChange={v => this.handleFieldTypeChange(v.target.value, this.props.fieldKey)}
         />
       );
     } else if (this.props.fieldType == 'datetime') {
@@ -26,7 +27,7 @@ export default class FieldValueInput extends React.Component {
           type="datetime-local"
           placeholder={`${this.props.fieldKey} Value`}
           value={moment(this.props.value).format('YYYY-MM-DDTHH:mm') || 0}
-          onChange={v => this.handlefieldTypeChange(new Date(v.target.value).getTime(), this.props.fieldKey)}
+          onChange={v => this.handleFieldTypeChange(new Date(v.target.value).getTime(), this.props.fieldKey)}
         />
       );
     } else if (this.props.fieldType == 'date') {
@@ -35,7 +36,7 @@ export default class FieldValueInput extends React.Component {
           type="date"
           placeholder={`${this.props.fieldKey} Value`}
           value={moment(this.props.value).format('YYYY-MM-DD') || 0}
-          onChange={v => this.handlefieldTypeChange(v.target.value, this.props.fieldKey)}
+          onChange={v => this.handleFieldTypeChange(v.target.value, this.props.fieldKey)}
         />
       );
     } else if (this.props.fieldType == 'color') {
@@ -43,7 +44,7 @@ export default class FieldValueInput extends React.Component {
         <input
           type="color"
           value={this.props.value || ''}
-          onChange={v => this.handlefieldTypeChange(v.target.value, this.props.fieldKey)}
+          onChange={v => this.handleFieldTypeChange(v.target.value, this.props.fieldKey)}
         />
       );
     } else if (this.props.fieldType.fieldType == 'relation') {
@@ -52,7 +53,7 @@ export default class FieldValueInput extends React.Component {
           <ObjectSearchDropdown
             fluid
             placeholder={`${this.props.fieldKey} Value (Related Object)`}
-            onChange={v => this.handlefieldTypeChange(v, this.props.fieldKey)}
+            onChange={v => this.handleFieldTypeChange(v._id, this.props.fieldKey)}
             onSearch={txt => searchObjects(this.props.fieldType.objectType, txt, 0, 5)}
           />
 
@@ -77,18 +78,20 @@ export default class FieldValueInput extends React.Component {
       return (
         <ObjectSearchDropdown
           placeholder={`${this.props.fieldKey} Value (Related Objects)`}
-          onChange={v => this.handlefieldTypeChange(v, this.props.fieldKey)}
+          onChange={v => this.handleFieldTypeChange(v.map(vv => vv._id), this.props.fieldKey)}
           onSearch={txt => searchObjects(this.props.fieldType.objectType, txt, 0, 5)}
           multiple
           fluid
         />
       )
+    } else if (canRenderEditableField(this.props.fieldType)) {
+      return renderEditableField(this.props.fieldType, this.props.fieldKey, this.props.value, v => this.handleFieldTypeChange(v, this.props.fieldKey))
     } else {
       return <p>Unknown field {this.props.fieldType}</p>;
     }
   }
 
-  handlefieldTypeChange(v, k) {
+  handleFieldTypeChange(v, k) {
     this.props.onChange && this.props.onChange(k, v);
   }
 }

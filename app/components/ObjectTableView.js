@@ -5,6 +5,7 @@ import { updateObject } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
 import { Pagination } from 'semantic-ui-react';
 import FieldValueInput from '../components/FieldValueInput';
+import { canRenderCell, renderCell } from './FieldSpec';
 
 export default class ObjectTableView extends React.Component {
   constructor(props) {
@@ -112,10 +113,14 @@ export default class ObjectTableView extends React.Component {
       return <span style={{backgroundColor: v, padding: '4px', borderRadius: '4px',}}>{v}</span>;
     } else if (typ == 'datetime'){
       return moment(v).format('LLL');
-    } else if (typ == 'date'){
+    } else if (typ == 'date') {
       return v;
+    } else if (typ.fieldType == 'relation') {
+      return <Link to={`/view_object/${v}`}>{v}</Link>;
+    } else if (canRenderCell(typ)) {
+      return renderCell(typ, v);
     } else {
-      return v;
+      return ''+v;
     }
   }
 }
