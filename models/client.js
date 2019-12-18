@@ -10,12 +10,14 @@ import PouchAuth from 'pouchdb-authentication';
 PouchDB.plugin(PouchFind);
 PouchDB.plugin(PouchAuth);
 
-const PrimType = {
+export const PrimType = {
   Type: 0,
   // DEPRECATED
   //RelType: 1,
   View: 2,
   History: 3,
+
+  CommunityModel: 200,
 }
 
 var __localSessionCache = {};
@@ -71,7 +73,6 @@ function _getUserRemoteDatabase() {
 
 function _getCommunityRemoteDatabase() {
   var db = new PouchDB(HOST + 'community');
-  db.createIndex({index: {fields: ['author']}});
   return Promise.resolve(db);
 }
 
@@ -97,10 +98,10 @@ const makeInterfaceForDBGen = (udb) => ({
   upsertObject: doc => udb().then(db => db.put(doc)),
   getObjectByID: id => udb().then(db => db.get(id)),
 
-  findObjectsByIDs: ids => udb().then(db => db.allDocs({keys: ids})).then(res => res.rows.map(r => r.doc)),
+  findObjectsByIDs: ids => udb().then(db => db.allDocs({keys: ids, include_docs: true})).then(res => res.rows.map(r => r.doc)),
 
-  findObjects: (query, skip, limit) => udb()
-    .then(db => db.find({selector: query, skip: skip, limit: limit}))
+  findObjects: (query, skip, limit, sort) => udb()
+    .then(db => db.find({selector: query, skip: skip, limit: limit, sort: sort}))
     .then(res => res.docs),
 
   findPagedObjects: (query, pageLimit, pageNo) => udb()
@@ -167,6 +168,24 @@ const makeInterfaceForDBGen = (udb) => ({
   deleteObject: (doc) => udb().then(db =>
     db.remove(doc)
   ),
+
+  deleteType: (typ) => udb().then(db =>
+    db.remove(typ)
+      .then(() => db.find({
+        selector: {
+          type: typ._id,
+        },
+        fields: ['_id', '_rev'],
+      }))
+      .then(res => res.docs.map(d => ({...d, _deleted: true})))
+      .then(ids => {
+        if (!ids || !ids.length) {
+          return;
+        }
+        console.log(ids);
+        return db.bulkDocs(ids);
+      })
+  ),
 });
 
 export const {
@@ -180,6 +199,7 @@ export const {
   updateTypeWithChanges,
   searchObjects,
   deleteObject,
+  deleteType,
 } = makeInterfaceForDBGen(_getUserDatabase);
 
 export const communityDB = makeInterfaceForDBGen(_getCommunityRemoteDatabase);

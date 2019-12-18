@@ -35,6 +35,7 @@ export default class ObjectSearchDropdown extends React.Component {
       'floating',
       'inline',
       'name',
+      'value',
     ].forEach(p => {
       passedProps[p] = this.props[p];
     });

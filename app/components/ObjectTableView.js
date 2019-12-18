@@ -112,6 +112,8 @@ export default class ObjectTableView extends React.Component {
       return <span style={{backgroundColor: v, padding: '4px', borderRadius: '4px',}}>{v}</span>;
     } else if (typ == 'datetime'){
       return moment(v).format('LLL');
+    } else if (typ == 'date'){
+      return v;
     } else {
       return v;
     }

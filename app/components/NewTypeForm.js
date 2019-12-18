@@ -79,7 +79,7 @@ export default class NewTypeForm extends React.Component {
           <tr>
             <th colSpan="3">
               <button
-                class="ui right floated positive button"
+                className="ui right floated positive button"
                 onClick={() => this.handleSubmit()}>
                 {this.props.type ? 'Update' : 'Create'}
               </button>

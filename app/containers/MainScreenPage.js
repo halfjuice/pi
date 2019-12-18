@@ -137,10 +137,10 @@ export default class MainScreenPage extends React.Component {
             <h4>Notely</h4>
           </div>
           <div className="right menu">
-            <div className="item">
+            <Link className="item" to="/community">
               <i className="comments icon" />
               Community
-            </div>
+            </Link>
             <Dropdown item icon="cog" simple>
               <Dropdown.Menu>
                 <Dropdown.Item>
@@ -245,6 +245,8 @@ export default class MainScreenPage extends React.Component {
             <div className="four column row">
               <ShortcutItem bigIcon="grey cubes" smallIcon="olive add" to="/new_type" name="New Type" />
               <ShortcutItem bigIcon="grey cubes" smallIcon="olive list" to="/all_types" name="All Types" />
+              <ShortcutItem bigIcon="grey comments" smallIcon="olive cloud upload" to="/community_publish" name="Publish Model" />
+              <ShortcutItem bigIcon="grey comments" smallIcon="olive list" to="/community_my" name="My Model" />
               <ShortcutItem
                 bigIcon="grey upload"
                 onClick={() => {

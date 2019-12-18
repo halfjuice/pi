@@ -37,7 +37,7 @@ export default class NewTypePage extends React.Component {
           </div>
         </div>
 
-      <NewTypeForm ref={this.formRef} />
+        <NewTypeForm ref={this.formRef} />
 
       </div>
     );

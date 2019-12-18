@@ -24,6 +24,9 @@ import UpdateTypePage from 'containers/UpdateTypePage';
 import ViewTypePage from 'containers/ViewTypePage';
 import ViewObjectPage from 'containers/ViewObjectPage';
 import ViewPage from 'containers/ViewPage';
+import CommunityPublishPage from 'containers/CommunityPublishPage';
+import CommunityMyPage from 'containers/CommunityMyPage';
+import CommunityMainScreen from 'containers/CommunityMainScreen';
 
 import GlobalStyle from '../../global-styles';
 
@@ -64,6 +67,9 @@ export default function App() {
         <Route path="/view_type/:type_id" component={ViewTypePage} />
         <Route path="/view_object/:obj_id" component={ViewObjectPage} />
         <Route path="/view/:view_id" component={ViewPage} />
+        <Route path="/community" component={CommunityMainScreen} />
+        <Route path="/community/publish" component={CommunityPublishPage} />
+        <Route path="/community/my" component={CommunityMyPage} />
         <Route path="" component={NotFoundPage} />
       </Switch>
       <GlobalStyle />

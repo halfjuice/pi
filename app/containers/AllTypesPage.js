@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { findObjects } from '../../models/client';
+import { findObjects, deleteType } from '../../models/client';
 
 export default class AllTypesPage extends React.Component {
   constructor(props) {
@@ -11,9 +11,13 @@ export default class AllTypesPage extends React.Component {
   }
 
   componentDidMount() {
+    this.refresh();
+  }
+
+  refresh() {
     findObjects({type: 0}).then((res, err) => {
       this.setState({types: res});
-    })
+    });
   }
 
   render() {
@@ -92,6 +96,17 @@ export default class AllTypesPage extends React.Component {
                       <i className="edit icon" />
                       Update
                     </Link>
+                    <a
+                      className="ui basic button"
+                      onClick={() => {
+                        if (confirm('Are you sure to delete type ' + t['name'] + '?')) {
+                          deleteType({_id: t['_id'], _rev: t['_rev']}).then(res => this.refresh()).catch(err => console.error(err));
+                        }
+                      }}
+                    >
+                      <i className="delete icon" />
+                      Delete
+                    </a>
                   </div>
                 </td>
               </tr>

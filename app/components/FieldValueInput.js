@@ -29,6 +29,15 @@ export default class FieldValueInput extends React.Component {
           onChange={v => this.handlefieldTypeChange(new Date(v.target.value).getTime(), this.props.fieldKey)}
         />
       );
+    } else if (this.props.fieldType == 'date') {
+      return (
+        <input
+          type="date"
+          placeholder={`${this.props.fieldKey} Value`}
+          value={moment(this.props.value).format('YYYY-MM-DD') || 0}
+          onChange={v => this.handlefieldTypeChange(v.target.value, this.props.fieldKey)}
+        />
+      );
     } else if (this.props.fieldType == 'color') {
       return (
         <input

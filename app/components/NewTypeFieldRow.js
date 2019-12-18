@@ -37,7 +37,7 @@ export default class NewTypeFieldRow extends React.Component {
           //{key: "number", value: "number", text: "Number", icon: "hashtag"},
           //{key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
           //{key: "address", value: "address", text: "Address", icon: "map marker"},
-          //{key: "date", value: "date", text: "Date", icon: "calendar outline"},
+          {key: "date", value: "date", text: "Date", icon: "calendar outline"},
           //{key: "time", value: "time", text: "Time", icon: "clock outline"},
           {key: "datetime", value: "datetime", text: "Datetime", icon: "calendar alternate outline"},
           {key: "color", value: "color", text: "Color", icon: "eye dropper"},
