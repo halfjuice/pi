@@ -86,7 +86,12 @@ function _getUserDatabase() {
 
         var localDB = new PouchDB('local-' + _nameToHex(name));
         localDB.createIndex({index: {fields: ['type']}});
-        localDB.sync(remoteDB, {live: true, retry: true});
+        localDB.sync(remoteDB, {
+          live: true,
+          retry: true,
+          batch_size: 512,
+          batches_limit: 32,
+        });
         return localDB;
       })
     });

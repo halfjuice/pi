@@ -67,7 +67,7 @@ export default class AllObjectsPage extends React.Component {
 
         <QueryObjectTableView
           type={this.props.match.params.type_id}
-          pageLimit={50}
+          pageLimit={20}
           editable={this.state.editing}
         />
       </div>

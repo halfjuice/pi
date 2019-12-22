@@ -62,7 +62,7 @@ export default class AllTypesPage extends React.Component {
           <tbody>
             {this.state.types.map((t, i) =>
               <tr key={`row-${t['_id']}`}>
-                <td>{t['_id']}</td>
+                <td>{t['_id'].slice(0, 5)+'..'}</td>
                 <td>
                   <Link className="header" to={`/view_type/${t['_id']}`}>
                     {t['name']}

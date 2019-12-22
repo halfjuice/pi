@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { getObjectByID, searchObjects } from '../../models/client';
 import ObjectSearchDropdown from './ObjectSearchDropdown';
 import { Dropdown } from 'semantic-ui-react';
@@ -46,8 +47,46 @@ class CurrencyEditableField extends React.Component {
   }
 
   updateChange() {
-    console.log(this.state);
     this.props.onChange && this.props.onChange(this.state);
+  }
+}
+
+class RelationCell extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {obj: null, loading: true}
+  }
+
+  componentDidMount() {
+    if (this.props.id) {
+      getObjectByID(this.props.id).then(obj => this.setState({obj: obj, loading: false}));
+    }
+  }
+
+  render() {
+    if (!this.props.id) {
+      return <></>;
+    }
+
+    if (this.state.loading) {
+      return <span className="item">Loading</span>;
+    }
+
+    if (!this.state.obj) {
+      return <span className="red item">Gone</span>;
+    }
+
+    return <Link className="item" to={`/view_object/${this.props.id}`}>{this.state.obj.name || this.props.id.slice(0, 5)+'...'}</Link>
+  }
+}
+
+class MultiRelationCell extends React.Component {
+  render() {
+    return (
+      <div class="ui celled horizontal list">
+        {this.props.ids.map(id => <RelationCell id={id} />)}
+      </div>
+    )
   }
 }
 
@@ -62,7 +101,17 @@ const SPEC = {
       usd: amt => '$' + amt,
       cny: amt => amt + '元',
     }[value.currency](value.amount)),
-  }
+  },
+
+  relation: {
+    renderCell: (v) =>
+      <RelationCell id={v} />
+  },
+
+  multi_relation: {
+    renderCell: (v) =>
+      <MultiRelationCell ids={v} />
+  },
 
 }
 
@@ -82,8 +131,7 @@ export function canRenderCell(fieldType) {
 
 export function renderEditableField(fieldType, fieldKey, value, onValueChange) {
   if (fieldType.fieldType) {
-    // TODO: ...
-    return;
+    return SPEC[fieldType.fieldType].renderEditableField(fieldKey, value, onValueChange);
   }
 
   return SPEC[fieldType].renderEditableField(fieldKey, value, onValueChange);
@@ -91,8 +139,7 @@ export function renderEditableField(fieldType, fieldKey, value, onValueChange) {
 
 export function renderCell(fieldType, value) {
   if (fieldType.fieldType) {
-    // TODO: ...
-    return;
+    return SPEC[fieldType.fieldType].renderCell(value);
   }
 
   if (!value) {

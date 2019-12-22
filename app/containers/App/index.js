@@ -50,10 +50,10 @@ export default function App() {
         />
         <script lang="javascript" src="/shim.min.js"></script>
         <script lang="javascript" src="/xlsx.full.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/bootstrap/main.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/timegrid/main.min.css" />
+        <link rel="stylesheet" href="/fullcalendar/bootstrap.min.css" />
+        <link rel="stylesheet" href="/fullcalendar/core.min.css" />
+        <link rel="stylesheet" href="/fullcalendar/daygrid.min.css" />
+        <link rel="stylesheet" href="/fullcalendar/timegrid.min.css" />
         <meta name="description" content="A React.js Boilerplate application" />
       </Helmet>
       <Switch>

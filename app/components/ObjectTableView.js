@@ -67,12 +67,12 @@ export default class ObjectTableView extends React.Component {
             <th colSpan={this.props.editable ? typeTuples.length+1 : typeTuples.length}>
               <Pagination
                 floated="right"
-                defaultActivePage={this.props.page}
+                defaultActivePage={this.props.page+1}
                 onPageChange={(e, {activePage}) => {
-                    if (activePage >= this.props.totalPage) {
-                      return;
-                    }
-                    this.props.onPageChange && this.props.onPageChange(activePage)
+                  if (activePage-1 >= this.props.totalPage) {
+                    return;
+                  }
+                  this.props.onPageChange && this.props.onPageChange(activePage-1)
                 }}
                 totalPages={this.props.totalPage}
               />
@@ -106,17 +106,17 @@ export default class ObjectTableView extends React.Component {
     }
 
     if (k == '_id') {
-      return <Link to={`/view_object/${v}`}>{v}</Link>;
+      return <Link to={`/view_object/${v}`}>{v.slice(0, 5) + '..'}</Link>;
     } else if (k == 'type') {
       return <Link to={`/view_type/${this.props.type._id}`}>{this.props.type.name}</Link>;
+    } else if (k == '_rev') {
+      return v.slice(0, 5) + '..';
     } else if (typ == 'color') {
       return <span style={{backgroundColor: v, padding: '4px', borderRadius: '4px',}}>{v}</span>;
     } else if (typ == 'datetime'){
       return moment(v).format('LLL');
     } else if (typ == 'date') {
       return v;
-    } else if (typ.fieldType == 'relation') {
-      return <Link to={`/view_object/${v}`}>{v}</Link>;
     } else if (canRenderCell(typ)) {
       return renderCell(typ, v);
     } else {
