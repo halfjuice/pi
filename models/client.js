@@ -94,8 +94,8 @@ function _getUserDatabase() {
         localDB.sync(remoteDB, {
           live: true,
           retry: true,
-          //batch_size: 512,
-          //batches_limit: 32,
+          batch_size: 64,
+          //batches_limit: 64,
         });
         return localDB;
       })
@@ -103,100 +103,104 @@ function _getUserDatabase() {
 }
 
 // v2 client
-const makeInterfaceForDBGen = (udb) => ({
-  createObject: fields => udb().then(db => db.post(fields)),
-  upsertObject: doc => udb().then(db => db.put(doc)),
-  getObjectByID: id => udb().then(db => db.get(id)),
+const makeInterfaceForDBGen = (udb) => {
+  const _handle = {
+    createObject: fields => udb().then(db => db.post(fields)),
+    upsertObject: doc => udb().then(db => db.put(doc)),
+    getObjectByID: id => udb().then(db => db.get(id)),
 
-  findObjectsByIDs: ids => udb().then(db => db.allDocs({keys: ids, include_docs: true})).then(res => res.rows.map(r => r.doc)),
+    findObjectsByIDs: ids => udb().then(db => db.allDocs({keys: ids, include_docs: true})).then(res => res.rows.map(r => r.doc)),
 
-  findObjects: (query, skip, limit, sort) => udb()
-    .then(db => db.find({selector: query, skip: skip, limit: limit, sort: sort}))
-    .then(res => res.docs),
+    findObjects: (query, skip, limit, sort) => udb()
+      .then(db => db.find({selector: query, skip: skip, limit: limit, sort: sort}))
+      .then(res => res.docs),
 
-  findPagedObjects: (query, pageLimit, pageNo) => udb()
-    .then(db => {
-      return Promise.all([
-        db.find({selector: query, skip: pageNo*pageLimit, limit: pageLimit}),
-        db.find({selector: query, fields: ['_id']}),
-      ]).then(([objs, cnt]) => ({total: cnt.docs.length, data: objs.docs}));
+    findPagedObjects: (query, pageLimit, pageNo) => udb()
+      .then(db => {
+        return Promise.all([
+          db.find({selector: query, skip: pageNo*pageLimit, limit: pageLimit}),
+          db.find({selector: query, fields: ['_id']}),
+        ]).then(([objs, cnt]) => ({total: cnt.docs.length, data: objs.docs}));
+      }),
+
+    updateObject: (id, updates) => udb().then(db =>
+      db.get(id).then(doc => db.put(mergeDict(doc, updates)))
+    ),
+
+    updateTypeWithChanges: (id, adds, removes, updates) => {
+      return udb().then(db => {
+        db.get(id).then(t => {
+          if (t.type != PrimType.Type) {
+            throw 'Cannot update non type with this function';
+          }
+
+          var newT = mergeDict(mergeDict(t, updates), adds);
+          removes.forEach(r => {
+            delete newT[r];
+          });
+          return newT;
+        }).then(newT => {
+          return Promise.all([
+            db.put(newT),
+            db.find({selector: {type: newT._id}}).then(res =>
+              db.bulkDocs(res.docs.map(doc => {
+                removes.forEach(r => { delete doc[r] });
+                for (var u in updates) { delete doc[u] }
+                return doc;
+              }))
+            ),
+          ]);
+        }).then(() => {
+          // TODO: Add history
+        });
+      });
+    },
+
+    searchObjects: (type, text, skip, limit) => udb().then(db => {
+      let pat = new RegExp(text);
+      if (!isNaN(type)) {
+        type = parseInt(type);
+      }
+
+      return db.find({
+        selector: {
+          type: type,
+          $or: [
+            {_id: {$regex: pat}},
+            {name: {$regex: pat}},
+            {description: {$regex: pat}},
+          ],
+        },
+        skip: skip,
+        limit: limit,
+      }).then(res => res.docs);
     }),
 
-  updateObject: (id, updates) => udb().then(db =>
-    db.get(id).then(doc => db.put(mergeDict(doc, updates)))
-  ),
+    deleteObject: (doc) => udb().then(db =>
+      db.remove(doc)
+    ),
 
-  updateTypeWithChanges: (id, adds, removes, updates) => {
-    return udb().then(db => {
-      db.get(id).then(t => {
-        if (t.type != PrimType.Type) {
-          throw 'Cannot update non type with this function';
-        }
+    deleteType: (typ) => udb().then(db =>
+      db.remove(typ)
+        .then(() => _handle.purge(typ))
+    ),
 
-        var newT = mergeDict(mergeDict(t, updates), adds);
-        removes.forEach(r => {
-          delete newT[r];
-        });
-        return newT;
-      }).then(newT => {
-        return Promise.all([
-          db.put(newT),
-          db.find({selector: {type: newT._id}}).then(res =>
-            db.bulkDocs(res.docs.map(doc => {
-              removes.forEach(r => { delete doc[r] });
-              for (var u in updates) { delete doc[u] }
-              return doc;
-            }))
-          ),
-        ]);
-      }).then(() => {
-        // TODO: Add history
-      });
-    });
-  },
-
-  searchObjects: (type, text, skip, limit) => udb().then(db => {
-    let pat = new RegExp(text);
-    if (!isNaN(type)) {
-      type = parseInt(type);
-    }
-
-    return db.find({
-      selector: {
-        type: type,
-        $or: [
-          {_id: {$regex: pat}},
-          {name: {$regex: pat}},
-          {description: {$regex: pat}},
-        ],
-      },
-      skip: skip,
-      limit: limit,
-    }).then(res => res.docs);
-  }),
-
-  deleteObject: (doc) => udb().then(db =>
-    db.remove(doc)
-  ),
-
-  deleteType: (typ) => udb().then(db =>
-    db.remove(typ)
-      .then(() => db.find({
-        selector: {
-          type: typ._id,
-        },
+    purge: (typ) => udb().then(db =>
+      db.find({
+        selector: {type: typ._id},
         fields: ['_id', '_rev'],
-      }))
-      .then(res => res.docs.map(d => ({...d, _deleted: true})))
-      .then(ids => {
-        if (!ids || !ids.length) {
-          return;
-        }
-        console.log(ids);
-        return db.bulkDocs(ids);
       })
-  ),
-});
+        .then(res => res.docs.map(d => ({...d, _deleted: true})))
+        .then(ids => {
+          if (!ids || !ids.length) {
+            return;
+          }
+          return db.bulkDocs(ids);
+        })
+    ),
+  };
+  return _handle;
+};
 
 export const {
   createObject,

@@ -109,6 +109,8 @@ export default class ObjectTableView extends React.Component {
       return <Link to={`/view_object/${v}`}>{v.slice(0, 5) + '..'}</Link>;
     } else if (k == 'type') {
       return <Link to={`/view_type/${this.props.type._id}`}>{this.props.type.name}</Link>;
+    } else if (k == 'name') {
+      return v ? v : '';
     } else if (k == '_rev') {
       return v.slice(0, 5) + '..';
     } else if (typ == 'color') {
@@ -120,7 +122,7 @@ export default class ObjectTableView extends React.Component {
     } else if (canRenderCell(typ)) {
       return renderCell(typ, v);
     } else {
-      return ''+v;
+      return v == undefined ? '' : ''+v;
     }
   }
 }

@@ -28,39 +28,40 @@ export default class AllObjectsPage extends React.Component {
           </Link>
         </div>
 
-        <div className="ui grid">
-          <div className="six wide column">
-            <h2>
-              <i className="table alternate icon" />
-              All {this.state.type && (this.state.type['name'] + ' ')}Object
-            </h2>
-          </div>
-          <div className="ten wide right aligned column">
-            <div className="ui icon basic buttons">
-              <button
-                className="ui basic button"
-                onClick={() => this.setState({editing: !this.state.editing})}
-              >
-                <i className="blue edit icon" />
-                Edit
-              </button>
-              <Link
-                className="ui basic button"
-                to={`/new_object/${this.state.type && this.state.type._id}`}
-              >
-                <i className="green plus icon" />
-                Create
-              </Link>
-              <Modal
-                trigger={
-                  <button className="ui basic button">
-                    <i className="arrow alternate circle down outline icon" />
-                    Import
-                  </button>
-                }>
-                <Modal.Header>Import data as {this.state.type && this.state.type.name}</Modal.Header>
-                <ImportDataWizardView type={this.state.type} />
-              </Modal>
+        <div className="ui bottom aligned grid">
+          <div className="row">
+            <div className="six wide column">
+              <h2>
+                All {this.state.type && (this.state.type['name'] + ' ')}Object
+              </h2>
+            </div>
+            <div className="ten wide right aligned column">
+              <div className="ui bulleted horizontal list">
+                <a
+                  className="item"
+                  onClick={() => this.setState({editing: !this.state.editing})}
+                >
+                  <i className="blue edit icon" />
+                  Edit
+                </a>
+                <Link
+                  className="item"
+                  to={`/new_object/${this.state.type && this.state.type._id}`}
+                >
+                  <i className="green plus icon" />
+                  Create
+                </Link>
+                <Modal
+                  trigger={
+                    <a className="item">
+                      <i className="arrow alternate circle down outline icon" />
+                      Import
+                    </a>
+                  }>
+                  <Modal.Header>Import data as {this.state.type && this.state.type.name}</Modal.Header>
+                  <ImportDataWizardView type={this.state.type} />
+                </Modal>
+              </div>
             </div>
           </div>
         </div>

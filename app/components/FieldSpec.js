@@ -144,8 +144,8 @@ class RelationCell extends React.Component {
 class MultiRelationCell extends React.Component {
   render() {
     return (
-      <div className="ui celled horizontal list">
-        {this.props.ids.map(id => <RelationCell id={id} />)}
+      <div className="ui divided horizontal list">
+        {this.props.ids && this.props.ids.map(id => <RelationCell key={`rel_cell_${id}`} id={id} />)}
       </div>
     )
   }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { findObjects, deleteType } from '../../models/client';
+import { Modal } from 'semantic-ui-react';
+import ImportDataWizardView from './ImportDataWizardView';
+import ViewerContext from '../components/ViewerContext';
 
 export default class AllTypesPage extends React.Component {
   constructor(props) {
@@ -15,7 +17,7 @@ export default class AllTypesPage extends React.Component {
   }
 
   refresh() {
-    findObjects({type: 0}).then((res, err) => {
+    ViewerContext.db().findObjects({type: 0}).then((res, err) => {
       this.setState({types: res});
     });
   }
@@ -29,22 +31,23 @@ export default class AllTypesPage extends React.Component {
           </Link>
         </div>
 
-        <div className="ui grid">
-          <div className="six wide column">
-            <h2>
-              <i className="cubes icon" />
-              All Types
-            </h2>
-          </div>
-          <div className="ten wide right aligned column">
-            <div className="ui icon basic buttons">
-              <Link
-                className="ui basic button"
-                to="/new_type"
-              >
-                <i className="green plus icon" />
-                Create
-              </Link>
+        <div className="ui bottom aligned grid">
+          <div className="row">
+            <div className="six wide column">
+              <h2>
+                All Types
+              </h2>
+            </div>
+            <div className="ten wide right aligned column">
+              <div className="ui horizontal bulleted list">
+                <Link
+                  className="item"
+                  to="/new_type"
+                >
+                  <i className="green plus icon" />
+                  New Type
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -69,43 +72,58 @@ export default class AllTypesPage extends React.Component {
                   </Link>
                 </td>
                 <td>
-                  <div className="mini ui icon basic buttons">
+                  <div className="ui divided horizontal list">
                     <Link
-                      className="ui basic button"
+                      className="item"
                       to={'/all_objects/' + t['_id']}
                     >
-                      <i className="eye icon" />
-                      View
+                      View All
                     </Link>
                     <Link
-                      className="ui basic button"
+                      className="item"
                       to={'/new_object/' + t['_id']}
                     >
-                      <i className="plus square outline icon" />
                       Create
                     </Link>
+                    <Modal
+                      trigger={
+                        <a className="item">
+                          Import
+                        </a>
+                      }>
+                      <Modal.Header>Import data as {t['name']}</Modal.Header>
+                      <ImportDataWizardView type={t} />
+                    </Modal>
                   </div>
                 </td>
 
                 <td>
-                  <div className="mini ui icon basic buttons">
+                  <div className="ui divided horizontal list">
                     <Link
-                      className="ui basic button"
+                      className="item"
                       to={'/update_type/' + t['_id']}
                     >
-                      <i className="edit icon" />
-                      Update
+                      Edit
                     </Link>
                     <a
-                      className="ui basic button"
+                      className="item"
                       onClick={() => {
                         if (confirm('Are you sure to delete type ' + t['name'] + '?')) {
-                          deleteType({_id: t['_id'], _rev: t['_rev']}).then(res => this.refresh()).catch(err => console.error(err));
+                          ViewerContext.db().deleteType({_id: t['_id'], _rev: t['_rev']}).then(res => this.refresh()).catch(err => console.error(err));
                         }
                       }}
                     >
-                      <i className="delete icon" />
                       Delete
+                    </a>
+                    <a
+                      className="item"
+                      onClick={() => {
+                        if (confirm('Are you sure to purge all data in type ' + t['name'] + '?')) {
+                          ViewerContext.db().purge({_id: t['_id'], _rev: t['_rev']}).then(res => this.refresh()).catch(err => console.error(err));
+                        }
+                      }}
+                    >
+                      Purge
                     </a>
                   </div>
                 </td>

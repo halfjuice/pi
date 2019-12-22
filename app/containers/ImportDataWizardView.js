@@ -3,6 +3,7 @@ import React from 'react';
 import { findObjects, createObject } from '../../models/client';
 import { obj2tuples, tuples2obj } from '../utils/helper';
 import { getTypeSpecFromFieldSpec } from '../components/NewTypeFieldRow';
+import ViewerContext from '../components/ViewerContext';
 
 class ImportColumnPolicySpec extends React.Component {
   constructor(props) {
@@ -37,8 +38,8 @@ class ImportColumnPolicySpec extends React.Component {
                 onChange={v => this.setState({nameDup: v.target.value}, this.update.bind(this))}
                 value={this.props.policy.nameDup}>
                 {[
-                  ['overwrite', 'Overwrite'],
                   ['create', 'Create'],
+                  ['overwrite', 'Overwrite'],
                   ['skip', 'Skip'],
                 ].map(([v, n]) => <option key={`name_resolve_${v}`} value={v}>{n}</option>)}
               </select>
@@ -264,12 +265,12 @@ export default class ImportView extends React.Component {
             let isMulti = this.props.type[pKey].fieldType == 'multi_relation';
             let rowValues = this.state.content.rows.map(r => r[pc.colIdx]);
             let names = isMulti
-              ? rowValues.map(rv => rv.split(pc.delimiter)).flat()
+              ? rowValues.map(rv => rv && rv.split(pc.delimiter)).flat()
               : rowValues;
 
             pending.push(
               // TODO: Perf++: Only fetch id and rev
-              findObjects({
+              ViewerContext.db().findObjects({
                 type: this.props.type[pKey].objectType,
                 name: {$in: names},
               }).then(docs => tuples2obj(docs.map(doc => [doc.name, doc])))
@@ -277,8 +278,7 @@ export default class ImportView extends React.Component {
                   if (this.state.policy[pKey].relCreateIfMissing) {
                     let namesToCreate = [...new Set(names.filter(n => !docMaps[n]))];
                     // TODO: Perf++: Batch create objects
-                    isMulti && console.log(pc.delimiter, names, namesToCreate, rowValues);
-                    return Promise.all(namesToCreate.map(n => createObject({
+                    return Promise.all(namesToCreate.map(n => ViewerContext.db().createObject({
                       type: this.props.type[pKey].objectType,
                       name: n,
                     })))
@@ -286,7 +286,7 @@ export default class ImportView extends React.Component {
                       .then(createdIdMap =>
                         isMulti
                           ? rowValues
-                              .map(rv => rv
+                              .map(rv => rv && rv
                                 .split(pc.delimiter)
                                 .map(n => createdIdMap[n] || docMaps[n]._id)
                               )
@@ -295,7 +295,7 @@ export default class ImportView extends React.Component {
                   } else {
                     return isMulti
                       ? rowValues
-                          .map(rv => rv
+                          .map(rv => rv && rv
                             .split(pc.delimiter)
                             .filter(n => docMaps[n])
                             .map(n => docMaps[n]._id)
@@ -322,19 +322,19 @@ export default class ImportView extends React.Component {
 
           let nameDup = this.state.policy['name'].nameDup || 'create';
           if (nameDup == 'create') {
-            Promise.all(data.map(o => createObject(o)))
+            Promise.all(data.map(o => ViewerContext.db().createObject(o)))
               .then(() => this.setState({processing: false, step: 4}));
             return;
           }
 
           let dataMap = tuples2obj(data.map(o => [o.name, o]));
           // TODO: Perf++: Only id and rev
-          findObjects({type: this.props.type._id, name: {$in: Object.keys(dataMap)}})
+          ViewerContext.db().findObjects({type: this.props.type._id, name: {$in: Object.keys(dataMap)}})
             .then(docs => tuples2obj(docs.map(doc => [doc.name, doc])))
             .then(docMaps => {
               if (nameDup == 'overwrite') {
                 return data.map(o => o.name in docMaps
-                  ? {_id: docMaps[o.name]._id, _rev: docMaps[o.name]._rev}
+                  ? {...o, _id: docMaps[o.name]._id, _rev: docMaps[o.name]._rev}
                   : o
                 );
               } else if (nameDup == 'skip') {
@@ -342,7 +342,7 @@ export default class ImportView extends React.Component {
               }
             })
             .then(objs => {
-              return Promise.all(objs.map(o => createObject(o)))
+              return Promise.all(objs.map(o => ViewerContext.db().upsertObject(o)))
             })
             .then(() => this.setState({processing: false, step: 4}));
         });
