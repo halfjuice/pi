@@ -76,6 +76,8 @@ function _getCommunityRemoteDatabase() {
   return Promise.resolve(db);
 }
 
+var __localIndexMarker = {};
+
 function _getUserDatabase() {
   return _getUserRemoteDatabase()
     .then(remoteDB => {
@@ -85,12 +87,15 @@ function _getUserDatabase() {
         }
 
         var localDB = new PouchDB('local-' + _nameToHex(name));
-        localDB.createIndex({index: {fields: ['type']}});
+        if (!__localIndexMarker[name]) {
+          localDB.createIndex({index: {fields: ['type']}});
+          __localIndexMarker[name] = true;
+        }
         localDB.sync(remoteDB, {
           live: true,
           retry: true,
-          batch_size: 512,
-          batches_limit: 32,
+          //batch_size: 512,
+          //batches_limit: 32,
         });
         return localDB;
       })
@@ -208,6 +213,11 @@ export const {
 } = makeInterfaceForDBGen(_getUserDatabase);
 
 export const communityDB = makeInterfaceForDBGen(_getCommunityRemoteDatabase);
+
+export const createConsistentUserDB = () => {
+  let __db = _getUserDatabase();
+  return makeInterfaceForDBGen(() => __db);
+}
 
 export function createDummyData() {
   return Promise.all([

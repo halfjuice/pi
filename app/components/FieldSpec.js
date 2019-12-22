@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { getObjectByID, searchObjects } from '../../models/client';
 import ObjectSearchDropdown from './ObjectSearchDropdown';
 import { Dropdown } from 'semantic-ui-react';
+import NewObjectForm from './NewObjectForm';
+import { Popup, Button, Modal } from 'semantic-ui-react';
+import ViewerContext from './ViewerContext';
 
 
 class CurrencyEditableField extends React.Component {
@@ -19,7 +22,7 @@ class CurrencyEditableField extends React.Component {
       <div className="ui grid">
         <div className="eight wide column">
           <Dropdown
-            placeholder={`${this.props.key} currency...`}
+            placeholder={`${this.props.fieldKey} currency...`}
             value={this.state.currency}
             key="value_select"
             fluid
@@ -51,6 +54,62 @@ class CurrencyEditableField extends React.Component {
   }
 }
 
+class RelationEditableField extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modalOpen: false,
+      obj: undefined,
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.value) {
+      let prom = this.props.multiple
+        ? ViewerContext.db().findObjectsByIDs(this.props.value)
+        : ViewerContext.db().getObjectByID(this.props.value);
+      prom
+        .then(obj => this.setState({obj: this.props.multiple ? obj.filter(o => o) : obj}))
+        .catch(obj => this.setState({obj: undefined}));
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <ObjectSearchDropdown
+          fluid
+          multiple={this.props.multiple}
+          placeholder={`${this.props.fieldKey} Value (Related Object)`}
+          onChange={v => this.props.onChange(
+            this.props.multiple
+              ? v.map(vv => vv._id)
+              : v._id
+          )}
+          onSearch={txt => ViewerContext.db().searchObjects(this.props.fieldType.objectType, txt, 0, 5)}
+          value={this.state.obj}
+        />
+
+        <Popup content='Create new object to relate to' trigger={
+          <a
+            onClick={() => this.setState({modalOpen: true})}>
+            Link to New
+          </a>
+        } />
+
+        <Modal
+          open={this.state.modalOpen}
+          onClose={() => this.setState({modalOpen: false})}>
+          <Modal.Header>Create object</Modal.Header>
+          <Modal.Content>
+            <NewObjectForm typeID={this.props.fieldType.objectType} />
+          </Modal.Content>
+        </Modal>
+      </div>
+    );
+  }
+}
+
 class RelationCell extends React.Component {
   constructor(props) {
     super(props);
@@ -59,7 +118,9 @@ class RelationCell extends React.Component {
 
   componentDidMount() {
     if (this.props.id) {
-      getObjectByID(this.props.id).then(obj => this.setState({obj: obj, loading: false}));
+      ViewerContext.db().getObjectByID(this.props.id)
+        .then(obj => this.setState({obj: obj, loading: false}))
+        .catch(err => this.setState({obj: null, loading: false}));
     }
   }
 
@@ -73,7 +134,7 @@ class RelationCell extends React.Component {
     }
 
     if (!this.state.obj) {
-      return <span className="red item">Gone</span>;
+      return <span className="item" style={{color: '#D95C5C'}}>Gone</span>;
     }
 
     return <Link className="item" to={`/view_object/${this.props.id}`}>{this.state.obj.name || this.props.id.slice(0, 5)+'...'}</Link>
@@ -83,19 +144,18 @@ class RelationCell extends React.Component {
 class MultiRelationCell extends React.Component {
   render() {
     return (
-      <div class="ui celled horizontal list">
+      <div className="ui celled horizontal list">
         {this.props.ids.map(id => <RelationCell id={id} />)}
       </div>
     )
   }
 }
 
-
 const SPEC = {
 
   currency: {
-    renderEditableField: (fieldKey, value, onValueChange) => (
-      <CurrencyEditableField key={fieldKey} value={value} onChange={onValueChange} />
+    renderEditableField: (fieldType, fieldKey, value, onValueChange) => (
+      <CurrencyEditableField fieldKey={fieldKey} value={value} onChange={onValueChange} />
     ),
     renderCell: (value) => ({
       usd: amt => '$' + amt,
@@ -104,11 +164,17 @@ const SPEC = {
   },
 
   relation: {
+    renderEditableField: (fieldType, fieldKey, value, onValueChange) => (
+      <RelationEditableField fieldType={fieldType} fieldKey={fieldKey} value={value} onChange={onValueChange} />
+    ),
     renderCell: (v) =>
       <RelationCell id={v} />
   },
 
   multi_relation: {
+    renderEditableField: (fieldType, fieldKey, value, onValueChange) => (
+      <RelationEditableField multiple={true} fieldType={fieldType} fieldKey={fieldKey} value={value} onChange={onValueChange} />
+    ),
     renderCell: (v) =>
       <MultiRelationCell ids={v} />
   },
@@ -131,10 +197,10 @@ export function canRenderCell(fieldType) {
 
 export function renderEditableField(fieldType, fieldKey, value, onValueChange) {
   if (fieldType.fieldType) {
-    return SPEC[fieldType.fieldType].renderEditableField(fieldKey, value, onValueChange);
+    return SPEC[fieldType.fieldType].renderEditableField(fieldType, fieldKey, value, onValueChange);
   }
 
-  return SPEC[fieldType].renderEditableField(fieldKey, value, onValueChange);
+  return SPEC[fieldType].renderEditableField(fieldType, fieldKey, value, onValueChange);
 }
 
 export function renderCell(fieldType, value) {

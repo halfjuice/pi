@@ -1,24 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'semantic-ui-react';
+import { tuples2obj, obj2tuples } from '../utils/helper';
 
 export default class ObjectSearchDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       options: [],
+      loadOnce: false,
       selected: [],
       raw: [],
     };
-  }
-
-  componentDidMount() {
-    this.props.onSearch && this.props.onSearch('').then(res => {
-      this.setState({
-        raw: res,
-        options: this.postProcess(res),
-      });
-    });
   }
 
   render() {
@@ -35,13 +28,28 @@ export default class ObjectSearchDropdown extends React.Component {
       'floating',
       'inline',
       'name',
-      'value',
     ].forEach(p => {
       passedProps[p] = this.props[p];
     });
 
+    let valueItem =
+      this.props.multiple
+        ? (this.props.value ? this.postProcess(this.props.value) : [])
+        : (this.props.value ? this.postProcess([this.props.value])[0] : null);
+
     return (
       <Dropdown
+        onFocus={() => {
+          if (!this.state.loadOnce) {
+            this.props.onSearch && this.props.onSearch('').then(res => {
+              this.setState({
+                raw: res,
+                options: this.postProcess(res),
+                loadOnce: true,
+              });
+            });
+          }
+        }}
         onChange={(e, v) => {
           if (!this.props.onChange) {
             return;
@@ -67,12 +75,20 @@ export default class ObjectSearchDropdown extends React.Component {
         selection
         options={
           this.props.multiple
-            ? this.state.options.concat(this.postProcess(this.state.selected))
-            : this.state.options
+            ? this.dedup(this.state.options.concat(this.postProcess(this.state.selected)).concat(valueItem))
+            : this.dedup(this.state.options.concat(valueItem ? [valueItem] : []))
           }
+        value={
+          this.props.multiple
+            ? valueItem.map(e => e.value)
+            : valueItem && valueItem.value}
         {...passedProps}
       />
     );
+  }
+
+  dedup(options) {
+    return Object.values(tuples2obj(options.map(o => [o.value, o])));
   }
 
   postProcess(data) {

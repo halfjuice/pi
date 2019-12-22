@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { findObjects, createDummyData, getCurrentUsername, logOut } from '../../../models/client';
+import ViewerContext from '../../components/ViewerContext';
 import MainScreenPage from '../MainScreenPage';
 import LoggedOutView from '../LoggedOutView';
 
@@ -22,6 +23,7 @@ export default class HomePage extends React.Component {
   }
 
   refreshState() {
+    ViewerContext.refresh();
     getCurrentUsername().then(n => {
       this.setState({loggedInState: n ? 'login' : 'logout'}, () => {
         findObjects({type: 2}).then(res => this.setState({views: res}));
