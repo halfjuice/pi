@@ -95,5 +95,9 @@ export function renderCell(fieldType, value) {
     return;
   }
 
+  if (!value) {
+    return '';
+  }
+
   return SPEC[fieldType].renderCell(value);
 }

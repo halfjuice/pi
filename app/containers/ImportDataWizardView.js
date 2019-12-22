@@ -2,6 +2,7 @@
 import React from 'react';
 import { findObjects, createObject } from '../../models/client';
 import { obj2tuples, tuples2obj } from '../utils/helper';
+import { getTypeSpecFromFieldSpec } from '../components/NewTypeFieldRow';
 
 class ImportColumnPolicySpec extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class ImportColumnPolicySpec extends React.Component {
       <>
         <div className="equal width fields">
           <div className="field">
-            <label>{this.props.fieldKey}</label>
+            <label>{this.props.fieldKey} {this.props.fieldKey != 'name' && <>({getTypeSpecFromFieldSpec(this.props.fieldType).text})</>}</label>
             <select
               className="ui fluid dropdown"
               onChange={v => this.setState({colIdx: v.target.value}, this.update.bind(this))}
@@ -172,7 +173,7 @@ export default class ImportView extends React.Component {
   renderThirdStepContent() {
     return (
       <div className="ui form">
-        You are now ready to import data.
+        You are now ready to import {this.state.content.rows.length} records.
       </div>
     );
   }
@@ -260,12 +261,14 @@ export default class ImportView extends React.Component {
 
         obj2tuples(this.state.policy).forEach(([pKey, pc]) => {
           if (['relation', 'multi_relation'].includes(this.props.type[pKey].fieldType)) {
-            //let isMulti = this.props.type[pKey].fieldType == 'multi_relation';
-            let names = this.state.content.rows.map(r =>
-              r[pc.colIdx]);
+            let isMulti = this.props.type[pKey].fieldType == 'multi_relation';
+            let rowValues = this.state.content.rows.map(r => r[pc.colIdx]);
+            let names = isMulti
+              ? rowValues.map(rv => rv.split(pc.delimiter)).flat()
+              : rowValues;
 
             pending.push(
-              // TODO: Only fetch id and rev
+              // TODO: Perf++: Only fetch id and rev
               findObjects({
                 type: this.props.type[pKey].objectType,
                 name: {$in: names},
@@ -273,25 +276,35 @@ export default class ImportView extends React.Component {
                 .then(docMaps => {
                   if (this.state.policy[pKey].relCreateIfMissing) {
                     let namesToCreate = [...new Set(names.filter(n => !docMaps[n]))];
-                    // TODO: Batch create objects
+                    // TODO: Perf++: Batch create objects
+                    isMulti && console.log(pc.delimiter, names, namesToCreate, rowValues);
                     return Promise.all(namesToCreate.map(n => createObject({
                       type: this.props.type[pKey].objectType,
                       name: n,
                     })))
                       .then(ids => tuples2obj(ids.map((i, ii) => [namesToCreate[ii], i.id])))
                       .then(createdIdMap =>
-                        names.map(n => createdIdMap[n] || docMaps[n]._id)
+                        isMulti
+                          ? rowValues
+                              .map(rv => rv
+                                .split(pc.delimiter)
+                                .map(n => createdIdMap[n] || docMaps[n]._id)
+                              )
+                          : names.map(n => createdIdMap[n] || docMaps[n]._id)
                       )
                   } else {
-                    return names.map(n => docMaps[n]._id);
+                    return isMulti
+                      ? rowValues
+                          .map(rv => rv
+                            .split(pc.delimiter)
+                            .filter(n => docMaps[n])
+                            .map(n => docMaps[n]._id)
+                          )
+                      : names.map(n => docMaps[n]._id);
                   }
                 })
                 .then(ids => { relatedObjs[pKey] = ids; })
             );
-          }
-
-          if (pKey == 'name') {
-            // TODO:
           }
         });
 
@@ -315,7 +328,7 @@ export default class ImportView extends React.Component {
           }
 
           let dataMap = tuples2obj(data.map(o => [o.name, o]));
-          // TODO: Only id and rev
+          // TODO: Perf++: Only id and rev
           findObjects({type: this.props.type._id, name: {$in: Object.keys(dataMap)}})
             .then(docs => tuples2obj(docs.map(doc => [doc.name, doc])))
             .then(docMaps => {

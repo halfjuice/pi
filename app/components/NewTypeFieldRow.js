@@ -2,6 +2,28 @@ import React from 'react';
 import { searchObjects } from '../../models/client';
 import ObjectSearchDropdown from './ObjectSearchDropdown';
 import { Dropdown } from 'semantic-ui-react';
+import { obj2tuples, tuples2obj } from '../utils/helper';
+
+const TypeSpecList = [
+  {key: "text", value: "text", text: "Text", icon: "font"},
+  //{key: "boolean", value: "boolean", text: "Yes / No", icon: "check square outline"},
+  //{key: "integer", value: "integer", text: "Integer", icon: "hashtag"},
+  //{key: "number", value: "number", text: "Number", icon: "hashtag"},
+  {key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
+  //{key: "address", value: "address", text: "Address", icon: "map marker"},
+  {key: "date", value: "date", text: "Date", icon: "calendar outline"},
+  //{key: "time", value: "time", text: "Time", icon: "clock outline"},
+  {key: "datetime", value: "datetime", text: "Datetime", icon: "calendar alternate outline"},
+  {key: "color", value: "color", text: "Color", icon: "eye dropper"},
+  {key: "relation", value: "relation", text: "Relation", icon: "exchange"},
+  {key: "multi_relation", value: "multi_relation", text: "Multi Relation", icon: "expand arrows alternate"},
+]
+
+export const TypeSpecs = tuples2obj(TypeSpecList.map(o => [o.value, o]));
+
+export function getTypeSpecFromFieldSpec(fieldSpec) {
+  return TypeSpecs[fieldSpec.fieldType || fieldSpec];
+}
 
 export default class NewTypeFieldRow extends React.Component {
   constructor(props) {
@@ -30,20 +52,7 @@ export default class NewTypeFieldRow extends React.Component {
         fluid
         search={options => options}
         selection
-        options={[
-          {key: "text", value: "text", text: "Text", icon: "font"},
-          //{key: "boolean", value: "boolean", text: "Yes / No", icon: "check square outline"},
-          //{key: "integer", value: "integer", text: "Integer", icon: "hashtag"},
-          //{key: "number", value: "number", text: "Number", icon: "hashtag"},
-          {key: "currency", value: "currency", text: "Currency", icon: "money bill alternate outline"},
-          //{key: "address", value: "address", text: "Address", icon: "map marker"},
-          {key: "date", value: "date", text: "Date", icon: "calendar outline"},
-          //{key: "time", value: "time", text: "Time", icon: "clock outline"},
-          {key: "datetime", value: "datetime", text: "Datetime", icon: "calendar alternate outline"},
-          {key: "color", value: "color", text: "Color", icon: "eye dropper"},
-          {key: "relation", value: "relation", text: "Relation", icon: "exchange"},
-          {key: "multi_relation", value: "multi_relation", text: "Multi Relation", icon: "expand arrows alternate"},
-        ]}
+        options={TypeSpecList}
         onChange={(e, v) => {
           this.setState({valueType: v.value}, this.updateChange.bind(this));
         }}
