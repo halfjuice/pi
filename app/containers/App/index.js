@@ -48,6 +48,8 @@ export default function App() {
           rel="stylesheet"
           href="/semantic.min.css"
         />
+        <script lang="javascript" src="/shim.min.js"></script>
+        <script lang="javascript" src="/xlsx.full.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/bootstrap/main.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.css" />

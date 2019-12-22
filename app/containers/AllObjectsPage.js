@@ -2,7 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { getObjectByID, getCurrentUsername } from '../../models/client';
 import { obj2tuples } from '../utils/helper';
+import { Modal } from 'semantic-ui-react';
 import QueryObjectTableView from '../components/QueryObjectTableView';
+import ImportDataWizardView from './ImportDataWizardView';
 
 export default class AllObjectsPage extends React.Component {
   constructor(props) {
@@ -49,6 +51,16 @@ export default class AllObjectsPage extends React.Component {
                 <i className="green plus icon" />
                 Create
               </Link>
+              <Modal
+                trigger={
+                  <button className="ui basic button">
+                    <i className="arrow alternate circle down outline icon" />
+                    Import
+                  </button>
+                }>
+                <Modal.Header>Import data as {this.state.type && this.state.type.name}</Modal.Header>
+                <ImportDataWizardView type={this.state.type} />
+              </Modal>
             </div>
           </div>
         </div>
