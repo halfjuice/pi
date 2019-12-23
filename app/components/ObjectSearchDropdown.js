@@ -54,7 +54,7 @@ export default class ObjectSearchDropdown extends React.Component {
           if (!this.props.onChange) {
             return;
           }
-          let objs = this.findRaw(this.props.multiple ? [v.value] : v.value, this.state.selected);
+          let objs = this.findRaw(v.value, this.state.selected);
           this.setState({selected: objs}, () => {
             this.props.onChange(objs);
           });
@@ -111,6 +111,11 @@ export default class ObjectSearchDropdown extends React.Component {
     for (var i=0; i<selected.length; i++) {
       if (selected[i]._id == objIDorList) {
         return selected[i];
+      }
+    }
+    for (var i=0; i<this.props.value.length; i++) {
+      if (this.props.value[i]._id == objIDorList) {
+        return this.props.value[i];
       }
     }
   }

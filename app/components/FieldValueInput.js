@@ -46,16 +46,6 @@ export default class FieldValueInput extends React.Component {
           onChange={v => this.handleFieldTypeChange(v.target.value, this.props.fieldKey)}
         />
       );
-    //} else if (this.props.fieldType.fieldType == 'multi_relation') {
-    //  return (
-    //    <ObjectSearchDropdown
-    //      placeholder={`${this.props.fieldKey} Value (Related Objects)`}
-    //      onChange={v => this.handleFieldTypeChange(v.map(vv => vv._id), this.props.fieldKey)}
-    //      onSearch={txt => searchObjects(this.props.fieldType.objectType, txt, 0, 5)}
-    //      multiple
-    //      fluid
-    //    />
-    //  )
     } else if (canRenderEditableField(this.props.fieldType)) {
       return renderEditableField(this.props.fieldType, this.props.fieldKey, this.props.value, v => this.handleFieldTypeChange(v, this.props.fieldKey))
     } else {

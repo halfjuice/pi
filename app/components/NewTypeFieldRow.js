@@ -86,9 +86,10 @@ export default class NewTypeFieldRow extends React.Component {
                   <ObjectSearchDropdown
                     placeholder="Related Type..."
                     onChange={v => {
-                      this.setState({objectType: v._id}, this.updateChange.bind(this));
+                      this.setState({objectType: v._id, object: v}, this.updateChange.bind(this));
                     }}
                     onSearch={txt => searchObjects(0, txt, 0, 5)}
+                    value={this.state.object}
                     fluid
                   />
                 </div>

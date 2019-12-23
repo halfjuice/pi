@@ -64,6 +64,16 @@ class RelationEditableField extends React.Component {
   }
 
   componentDidMount() {
+    this.updateObject();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.value != this.props.value) {
+      this.updateObject();
+    }
+  }
+
+  updateObject() {
     if (this.props.value) {
       let prom = this.props.multiple
         ? ViewerContext.db().findObjectsByIDs(this.props.value)
@@ -81,11 +91,13 @@ class RelationEditableField extends React.Component {
           fluid
           multiple={this.props.multiple}
           placeholder={`${this.props.fieldKey} Value (Related Object)`}
-          onChange={v => this.props.onChange(
-            this.props.multiple
-              ? v.map(vv => vv._id)
-              : v._id
-          )}
+          onChange={v => {
+            this.props.onChange && this.props.onChange(
+              this.props.multiple
+                ? v.map(vv => vv && vv._id)
+                : v._id
+            );
+          }}
           onSearch={txt => ViewerContext.db().searchObjects(this.props.fieldType.objectType, txt, 0, 5)}
           value={this.state.obj}
         />

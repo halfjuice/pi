@@ -22,7 +22,7 @@ export default class ObjectTableView extends React.Component {
     let typeTuples = obj2tuples(this.props.type);
 
     return (
-      <table className="ui form celled table">
+      <table key={`table_page_${this.props.page}`} className="ui form celled table">
         <thead>
           <tr>
             {typeTuples.map((t, i) => <th key={`hdr_col_${i}`}>{t[0]}</th>)}
@@ -36,10 +36,10 @@ export default class ObjectTableView extends React.Component {
 
         <tbody>
           {(this.props.objects || []).map((o, i) => (
-            <tr key={`cell_row_${i}`}>
+            <tr key={`cell_row_p${this.props.page}_${i}`}>
               {typeTuples.map((t, j) =>
-                <td key={`cell_col_${j}`}>
-                  {this.renderCell(o, t)}
+                <td key={`cell_col_p${this.props.page}_${j}`}>
+                  {this.innerRenderCell(o, t)}
                 </td>
               )}
               {this.props.editable &&
@@ -83,7 +83,7 @@ export default class ObjectTableView extends React.Component {
     );
   }
 
-  renderCell(o, t) {
+  innerRenderCell(o, t) {
     let k = t[0];
     let typ = t[1];
     let v = ((this.props.pendingChanges || {})[o._id] && (this.props.pendingChanges || {})[o._id][k]) || o[k];

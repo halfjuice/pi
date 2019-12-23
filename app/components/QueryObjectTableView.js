@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { findPagedObjects, getObjectByID, updateObject, deleteObject } from '../../models/client';
+import { updateObject, deleteObject } from '../../models/client';
 import { mergeDict, obj2tuples } from '../utils/helper';
 import ObjectTableView from './ObjectTableView';
+import ViewerContext from './ViewerContext';
 
 export default class QueryObjectTableView extends React.Component {
 
@@ -35,24 +36,29 @@ export default class QueryObjectTableView extends React.Component {
   refresh() {
     var isTypePropObject = !['string', 'number'].includes(typeof this.props.type);
 
-    (isTypePropObject
-      ? Promise.resolve(this.props.type)
-      : getObjectByID(this.props.type)
-    ).then(t => this.setState({type: t}));
-
-    findPagedObjects(
-      mergeDict(
-        this.props.query || {},
-        {type: isTypePropObject ? this.props.type._id : this.props.type},
-      ),
-      this.props.pageLimit,
-      this.state.page
-    ).then(res => {
-      this.setState({
-        objects: res.data,
-        totalPage: Math.ceil(res.total / this.props.pageLimit),
+    (() => {
+      if (this.state.type) {
+        return Promise.resolve(this.state.type);
+      }
+      if (isTypePropObject) {
+        return Promise.resolve(this.props.type);
+      }
+      return ViewerContext.db().getObjectByID(this.props.type);
+    })().then(t => this.setState({type: t}, () => {
+      ViewerContext.db().findPagedObjects(
+        mergeDict(
+          this.props.query || {},
+          {type: isTypePropObject ? this.props.type._id : this.props.type},
+        ),
+        this.props.pageLimit,
+        this.state.page
+      ).then(res => {
+        this.setState({
+          objects: res.data,
+          totalPage: Math.ceil(res.total / this.props.pageLimit),
+        });
       });
-    });
+    }));
   }
 
   render() {
@@ -62,7 +68,7 @@ export default class QueryObjectTableView extends React.Component {
         objects={this.state.objects}
         totalPage={this.state.totalPage}
         page={this.state.page}
-        onPageChange={page => this.setState({page: page}, this.refresh.bind(this))}
+        onPageChange={page => this.setState({page: page, objects: []}, this.refresh.bind(this))}
         editable={this.props.editable}
         pendingChanges={this.state.pendingChanges}
         onFieldChange={(oid, k, v) => {

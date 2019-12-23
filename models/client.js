@@ -94,7 +94,7 @@ function _getUserDatabase() {
         localDB.sync(remoteDB, {
           live: true,
           retry: true,
-          batch_size: 64,
+          batch_size: 128,
           //batches_limit: 64,
         });
         return localDB;
@@ -118,7 +118,7 @@ const makeInterfaceForDBGen = (udb) => {
     findPagedObjects: (query, pageLimit, pageNo) => udb()
       .then(db => {
         return Promise.all([
-          db.find({selector: query, skip: pageNo*pageLimit, limit: pageLimit}),
+          db.find({selector: query, skip: pageNo*pageLimit, limit: pageLimit, sort: ['_id']}),
           db.find({selector: query, fields: ['_id']}),
         ]).then(([objs, cnt]) => ({total: cnt.docs.length, data: objs.docs}));
       }),
