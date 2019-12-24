@@ -56,7 +56,7 @@ class QueryNewTypeFieldRow extends React.Component {
                   selection
                   fluid
                   options={[
-                    {key: '$eq', value: '$eq', text: 'equals'}
+                    {key: '$eq', value: '$eq', text: 'is'}
                   ]}
                 />
               </td>
@@ -86,7 +86,7 @@ class QueryNewTypeFieldRow extends React.Component {
                   selection
                   fluid
                   options={[
-                    {key: '$eq', value: '$eq', text: 'equals'}
+                    {key: '$eq', value: '$eq', text: 'is'}
                   ]}
                 />
               </td>
@@ -94,9 +94,10 @@ class QueryNewTypeFieldRow extends React.Component {
                 <ObjectSearchDropdown
                   placeholder="Search object..."
                   onChange={v => {
-                    this.setState({rightV: v._id}, this.updateChange.bind(this));
+                    this.setState({rightV: v._id, rightVObj: v}, this.updateChange.bind(this));
                   }}
                   onSearch={txt => searchObjects(this.state.fieldType.objectType, txt, 0, 5)}
+                  value={this.state.rightVObj}
                   fluid
                 />
               </td>
@@ -164,21 +165,24 @@ export default class QuerySpecRow extends React.Component {
               }}
             />
           )}
-        </tbody>
-        <tfoot>
           <tr>
-            <th colSpan="2">
-              <button
-                class="ui right floated button"
-                onClick={() => this.setState(
+            <td colSpan={3}>
+              <div className="ui bulleted horizontal list">
+                <a className="item" onClick={() => this.setState(
                   {querySpecs: this.state.querySpecs.concat([['', {}]])},
                   this.updateChange.bind(this),
                 )}>
-                Add
-              </button>
-            </th>
+                  Add
+                </a>
+                {this.props.onApply &&
+                  <a className="item" onClick={() => this.props.onApply()}>
+                    Apply
+                  </a>
+                }
+              </div>
+            </td>
           </tr>
-        </tfoot>
+        </tbody>
       </table>
     );
   }

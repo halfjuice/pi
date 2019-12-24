@@ -5,12 +5,16 @@ import { obj2tuples } from '../utils/helper';
 import { Modal } from 'semantic-ui-react';
 import QueryObjectTableView from '../components/QueryObjectTableView';
 import ImportDataWizardView from './ImportDataWizardView';
+import QuerySpecRow from '../components/QuerySpecRow';
 
 export default class AllObjectsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       editing: false,
+
+      tempFilter: {},
+      filter: {},
     };
   }
 
@@ -66,10 +70,19 @@ export default class AllObjectsPage extends React.Component {
           </div>
         </div>
 
+        {this.state.type &&
+          <QuerySpecRow
+            type={this.state.type}
+            onChange={filter => this.setState({tempFilter: filter})}
+            onApply={() => this.setState({filter: this.state.tempFilter})}
+          />
+        }
+
         <QueryObjectTableView
           type={this.props.match.params.type_id}
           pageLimit={20}
           editable={this.state.editing}
+          query={this.state.filter}
         />
       </div>
     );

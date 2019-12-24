@@ -33,6 +33,12 @@ export default class QueryObjectTableView extends React.Component {
     this.refresh();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.query != this.props.query) {
+      this.refresh();
+    }
+  }
+
   refresh() {
     var isTypePropObject = !['string', 'number'].includes(typeof this.props.type);
 
@@ -44,7 +50,7 @@ export default class QueryObjectTableView extends React.Component {
         return Promise.resolve(this.props.type);
       }
       return ViewerContext.db().getObjectByID(this.props.type);
-    })().then(t => this.setState({type: t}, () => {
+    })().then(t => this.setState({type: t, objects: []}, () => {
       ViewerContext.db().findPagedObjects(
         mergeDict(
           this.props.query || {},

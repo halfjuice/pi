@@ -3,6 +3,7 @@ import { searchObjects } from '../../models/client';
 import ObjectSearchDropdown from './ObjectSearchDropdown';
 import { Dropdown } from 'semantic-ui-react';
 import { obj2tuples, tuples2obj } from '../utils/helper';
+import ViewerContext from './ViewerContext';
 
 const TypeSpecList = [
   {key: "text", value: "text", text: "Text", icon: "font"},
@@ -29,6 +30,14 @@ export default class NewTypeFieldRow extends React.Component {
   constructor(props) {
     super(props);
     this.state = this.getStateFromProps(props);
+  }
+
+  componentDidMount() {
+    if (this.props.value[1].objectType) {
+      ViewerContext.db().getObjectByID(this.props.value[1].objectType).then(obj => {
+        this.setState({object: obj});
+      });
+    }
   }
 
   componentWillReceiveProps(props) {
