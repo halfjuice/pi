@@ -273,6 +273,7 @@ export default class MainScreenPage extends React.Component {
         </Modal>
 
         <MultiQueryObjectTableView
+          useFilter={true}
           spec={{
             source: 'ef0301b8-595a-41ab-a8f0-17764ae6b27a',
             fields: '轮次|被投企业|投资机构|金额1|币种|时间'.split('|'),

@@ -1,9 +1,11 @@
 import React from 'react';
+import sift from 'sift';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { updateObject, deleteObject } from '../../models/client';
 import { mergeDict, obj2tuples, tuples2obj } from '../utils/helper';
 import ObjectTableView from './ObjectTableView';
+import QuerySpecRow from './QuerySpecRow';
 import ViewerContext from './ViewerContext';
 
 /*
@@ -103,6 +105,9 @@ export default class MultiQueryObjectTableView extends React.Component {
 
       page: 0,
       totalPage: 1,
+
+      tempFilter: {},
+      filter: {}
     };
   }
 
@@ -117,23 +122,48 @@ export default class MultiQueryObjectTableView extends React.Component {
   }
 
   refresh() {
-    runQueryWithSpec(this.props.spec, this.props.pageLimit, this.state.page).then(([cols, objs, total]) => this.setState({
-      columns: cols,
-      objects: objs,
-      totalPage: Math.ceil(total / this.props.pageLimit),
-    }));
+    if (this.props.useFilter) {
+      runQueryWithSpec(this.props.spec, undefined, undefined).then(([cols, objs, total]) => {
+        objs = objs.filter(sift(this.state.filter));
+        this.setState({columns: cols, objects: objs, totalPage: Math.ceil(objs.length / this.props.pageLimit)});
+      });
+    } else {
+      runQueryWithSpec(this.props.spec, this.props.pageLimit, this.state.page).then(([cols, objs, total]) => this.setState({
+        columns: cols,
+        objects: objs,
+        totalPage: Math.ceil(total / this.props.pageLimit),
+      }));
+    }
   }
 
   render() {
-    console.log(this.state.columns, this.state.objects);
     return (
-      <ObjectTableView
-        type={this.state.columns}
-        objects={this.state.objects}
-        totalPage={this.state.totalPage}
-        page={this.state.page}
-        onPageChange={page => this.setState({page: page, objects: []}, this.refresh.bind(this))}
-      />
+      <>
+        {this.props.useFilter &&
+          <QuerySpecRow
+            type={this.state.columns}
+            onChange={filter => this.setState({tempFilter: filter})}
+            onApply={() => this.setState({filter: {...this.state.tempFilter}}, this.refresh.bind(this))}
+          />
+        }
+        <ObjectTableView
+          type={this.state.columns}
+          objects={
+            this.props.useFilter
+              ? this.state.objects.slice(this.state.page * this.props.pageLimit, (this.state.page+1)*this.props.pageLimit)
+              : this.state.objects
+          }
+          totalPage={this.state.totalPage}
+          page={this.state.page}
+          onPageChange={page => {
+            if (this.props.useFilter) {
+              this.setState({page: page});
+            } else {
+              this.setState({page: page, objects: []}, this.refresh.bind(this));
+            }
+          }}
+        />
+      </>
     )
   }
 }
