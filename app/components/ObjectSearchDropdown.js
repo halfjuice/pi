@@ -9,7 +9,6 @@ export default class ObjectSearchDropdown extends React.Component {
     this.state = {
       options: [],
       loadOnce: false,
-      selected: [],
       raw: [],
     };
   }
@@ -54,10 +53,8 @@ export default class ObjectSearchDropdown extends React.Component {
           if (!this.props.onChange) {
             return;
           }
-          let objs = this.findRaw(v.value, this.state.selected);
-          this.setState({selected: objs}, () => {
-            this.props.onChange(objs);
-          });
+          let objs = this.findRaw(v.value);
+          this.props.onChange(objs);
         }}
         onSearchChange={(e, v) => {
           if (!this.props.onSearch) {
@@ -75,7 +72,7 @@ export default class ObjectSearchDropdown extends React.Component {
         selection
         options={
           this.props.multiple
-            ? this.dedup(this.state.options.concat(this.postProcess(this.state.selected)).concat(valueItem))
+            ? this.dedup(this.state.options.concat(valueItem))
             : this.dedup(this.state.options.concat(valueItem ? [valueItem] : []))
           }
         value={
@@ -99,18 +96,13 @@ export default class ObjectSearchDropdown extends React.Component {
     }));
   }
 
-  findRaw(objIDorList, selected) {
+  findRaw(objIDorList) {
     if (objIDorList instanceof Array) {
-      return objIDorList.map(e => this.findRaw(e, selected));
+      return objIDorList.map(e => this.findRaw(e));
     }
     for (var i=0; i<this.state.raw.length; i++) {
       if (this.state.raw[i]._id == objIDorList) {
         return this.state.raw[i];
-      }
-    }
-    for (var i=0; i<selected.length; i++) {
-      if (selected[i]._id == objIDorList) {
-        return selected[i];
       }
     }
     for (var i=0; i<this.props.value.length; i++) {

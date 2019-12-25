@@ -11,6 +11,7 @@ import {
 } from '../../models/client';
 import { Dropdown, Modal } from 'semantic-ui-react';
 import NewViewForm from '../components/NewViewForm';
+import MultiQueryObjectTableView from '../components/MultiQueryObjectTableView';
 
 class ShortcutItem extends React.Component {
   render() {
@@ -45,6 +46,7 @@ export default class MainScreenPage extends React.Component {
     this.state = {
       editing: false,
       sections: {_id: 'sections', sections: []},
+      origSections: {_id: 'sections', sections: []},
       views: {},
 
       onAddViewHandler: null,
@@ -269,6 +271,20 @@ export default class MainScreenPage extends React.Component {
             <NewViewForm onSubmit={this.state.onAddViewHandler} />
           </Modal.Content>
         </Modal>
+
+        <MultiQueryObjectTableView
+          spec={{
+            source: 'ef0301b8-595a-41ab-a8f0-17764ae6b27a',
+            fields: '轮次|被投企业|投资机构|金额1|币种|时间'.split('|'),
+            joins: [
+              {
+                on: '被投企业',
+                fields: ['所在城市', '简介'],
+              }
+            ],
+          }}
+          pageLimit={10}
+        />
       </div>
     );
   }

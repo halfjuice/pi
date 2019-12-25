@@ -35,11 +35,11 @@ export default class QueryObjectTableView extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.query != this.props.query) {
-      this.refresh();
+      this.refresh(this.props.type != prevProps.type);
     }
   }
 
-  refresh() {
+  refresh(clear=false) {
     var isTypePropObject = !['string', 'number'].includes(typeof this.props.type);
 
     (() => {
@@ -50,7 +50,7 @@ export default class QueryObjectTableView extends React.Component {
         return Promise.resolve(this.props.type);
       }
       return ViewerContext.db().getObjectByID(this.props.type);
-    })().then(t => this.setState({type: t, objects: []}, () => {
+    })().then(t => this.setState({type: t, ...(clear ? {objects: []} : {})}, () => {
       ViewerContext.db().findPagedObjects(
         mergeDict(
           this.props.query || {},
@@ -74,7 +74,7 @@ export default class QueryObjectTableView extends React.Component {
         objects={this.state.objects}
         totalPage={this.state.totalPage}
         page={this.state.page}
-        onPageChange={page => this.setState({page: page, objects: []}, this.refresh.bind(this))}
+        onPageChange={page => this.setState({page: page}, this.refresh.bind(this))}
         editable={this.props.editable}
         pendingChanges={this.state.pendingChanges}
         onFieldChange={(oid, k, v) => {

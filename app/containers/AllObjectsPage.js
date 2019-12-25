@@ -73,8 +73,10 @@ export default class AllObjectsPage extends React.Component {
         {this.state.type &&
           <QuerySpecRow
             type={this.state.type}
-            onChange={filter => this.setState({tempFilter: filter})}
-            onApply={() => this.setState({filter: this.state.tempFilter})}
+            onChange={filter => {
+              this.setState({tempFilter: filter});
+            }}
+            onApply={() => this.setState({filter: {...this.state.tempFilter}})}
           />
         }
 

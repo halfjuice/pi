@@ -101,6 +101,7 @@
     "reselect": "4.0.0",
     "sanitize.css": "8.0.0",
     "semantic-ui-react": "^0.88.1",
+    "sift": "^9.0.4",
     "sqlite3": "^4.1.0",
     "styled-components": "4.2.0"
   },

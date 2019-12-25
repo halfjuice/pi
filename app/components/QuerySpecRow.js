@@ -49,20 +49,13 @@ class QueryNewTypeFieldRow extends React.Component {
         <table style={{width: '100%'}}>
           <tbody>
             <tr>
-              <td className="eight wide">
-                <Dropdown
-                  key="criteria-dropdown"
-                  onChange={(e, v) => this.setState({criteria: v.value}, this.updateChange.bind(this))}
-                  selection
-                  fluid
-                  options={[
-                    {key: '$eq', value: '$eq', text: 'is'}
-                  ]}
-                />
-              </td>
+              {this.renderCriteria({
+                $eq: 'is',
+              })}
               <td className="eight wide">
                 <input
                   key="right-value-input"
+                  type="text"
                   placeholder="Right text value"
                   value={this.state.rightV}
                   onChange={v => {
@@ -79,28 +72,30 @@ class QueryNewTypeFieldRow extends React.Component {
         <table style={{width: '100%'}}>
           <tbody>
             <tr>
-              <td className="eight wide">
-                <Dropdown
-                  key="criteria-dropdown"
-                  onChange={(e, v) => this.setState({criteria: v.value}, this.updateChange.bind(this))}
-                  selection
-                  fluid
-                  options={[
-                    {key: '$eq', value: '$eq', text: 'is'}
-                  ]}
-                />
-              </td>
-              <td className="eight wide">
-                <ObjectSearchDropdown
-                  placeholder="Search object..."
-                  onChange={v => {
-                    this.setState({rightV: v._id, rightVObj: v}, this.updateChange.bind(this));
-                  }}
-                  onSearch={txt => searchObjects(this.state.fieldType.objectType, txt, 0, 5)}
-                  value={this.state.rightVObj}
-                  fluid
-                />
-              </td>
+              {this.renderCriteria({
+                $eq: 'is',
+                $in: 'is one of',
+              })}
+              {(x => x && x.bind(this)())({
+                $eq: this.renderRightVObject,
+                $in: this.renderRightVMultiObjects,
+              }[this.state.criteria])}
+            </tr>
+          </tbody>
+        </table>
+      );
+    } else if (this.state.fieldType && this.state.fieldType.fieldType == 'multi_relation') {
+      return (
+        <table style={{width: '100%'}}>
+          <tbody>
+            <tr>
+              {this.renderCriteria({
+                $all: 'contains all of',
+
+              })}
+              {(x => x && x.bind(this)())({
+                $all: this.renderRightVMultiObjects,
+              }[this.state.criteria])}
             </tr>
           </tbody>
         </table>
@@ -108,6 +103,57 @@ class QueryNewTypeFieldRow extends React.Component {
     } else {
       return "Choose a field";
     }
+  }
+
+  renderCriteria(data) {
+    return (
+      <td className="eight wide">
+        <Dropdown
+          key="criteria-dropdown"
+          onChange={(e, v) => this.setState(
+            {criteria: v.value, rightV: undefined, rightVObj: undefined},
+            this.updateChange.bind(this),
+          )}
+          selection
+          fluid
+          options={Object.keys(data).map(k => ({key: k, value: k, text: data[k]}))}
+        />
+      </td>
+    );
+
+  }
+
+  renderRightVMultiObjects() {
+    return (
+      <td className="eight wide">
+        <ObjectSearchDropdown
+          placeholder="Search object..."
+          onChange={v => {
+            this.setState({rightV: v.map(vv => vv._id), rightVObj: v}, this.updateChange.bind(this));
+          }}
+          multiple
+          onSearch={txt => searchObjects(this.state.fieldType.objectType, txt, 0, 5)}
+          value={this.state.rightVObj || []}
+          fluid
+        />
+      </td>
+    );
+  }
+
+  renderRightVObject() {
+    return (
+      <td className="eight wide">
+        <ObjectSearchDropdown
+          placeholder="Search object..."
+          onChange={v => {
+            this.setState({rightV: v._id, rightVObj: v}, this.updateChange.bind(this));
+          }}
+          onSearch={txt => searchObjects(this.state.fieldType.objectType, txt, 0, 5)}
+          value={this.state.rightVObj}
+          fluid
+        />
+      </td>
+    );
   }
 
   updateChange() {
@@ -123,8 +169,12 @@ class QueryNewTypeFieldRow extends React.Component {
 
     if (this.state.fieldType == 'text') {
       //
-    } else if (this.state.fieldType == 'relation') {
-      //
+    } else if (this.state.fieldType.fieldType == 'relation') {
+      this.props.onChange(this.state.field, {[this.state.criteria]: this.state.rightV});
+      return;
+    } else if (this.state.fieldType.fieldType == 'multi_relation') {
+      this.props.onChange(this.state.field, {[this.state.criteria]: this.state.rightV});
+      return;
     }
   }
 }
@@ -156,6 +206,7 @@ export default class QuerySpecRow extends React.Component {
         <tbody>
           {this.state.querySpecs.map((spec, i) =>
             <QueryNewTypeFieldRow
+              key={`field_row_${i}`}
               type={this.props.type}
               typeFields={obj2tuples(this.props.type).filter(x => !['_id', '_rev', 'type'].includes(x[0]))}
               onChange={(f, v) => {

@@ -129,7 +129,18 @@ class RelationCell extends React.Component {
   }
 
   componentDidMount() {
+    this.refresh();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.id != this.props.id) {
+      this.refresh();
+    }
+  }
+
+  refresh() {
     if (this.props.id) {
+      this.setState({obj: null, loading: true});
       ViewerContext.db().getObjectByID(this.props.id)
         .then(obj => this.setState({obj: obj, loading: false}))
         .catch(err => this.setState({obj: null, loading: false}));

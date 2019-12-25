@@ -111,15 +111,15 @@ const makeInterfaceForDBGen = (udb) => {
 
     findObjectsByIDs: ids => udb().then(db => db.allDocs({keys: ids, include_docs: true})).then(res => res.rows.map(r => r.doc)),
 
-    findObjects: (query, skip, limit, sort) => udb()
-      .then(db => db.find({selector: query, skip: skip, limit: limit, sort: sort}))
+    findObjects: (query, skip, limit, sort, options) => udb()
+      .then(db => db.find({selector: query, skip: skip, limit: limit, sort: sort, ...options}))
       .then(res => res.docs),
 
-    findPagedObjects: (query, pageLimit, pageNo) => udb()
+    findPagedObjects: (query, pageLimit, pageNo, options) => udb()
       .then(db => {
         return Promise.all([
-          db.find({selector: query, skip: pageNo*pageLimit, limit: pageLimit, sort: ['_id']}),
-          db.find({selector: query, fields: ['_id']}),
+          db.find({selector: query, skip: pageNo*pageLimit, limit: pageLimit, sort: ['_id'], ...options}),
+          db.find({selector: query, ...options, fields: ['_id', ...(options && options.fields || [])]}),
         ]).then(([objs, cnt]) => ({total: cnt.docs.length, data: objs.docs}));
       }),
 
